@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.py[oc]
+.venv/
+.ipynb_checkpoints/
+data/raw/
+data/processed/
+*.db
+models/
+docker-compose.yml
+*.pdf
+*.pyc
+raw/*.pdf
+processed/*.jsonl
+.DS_Store

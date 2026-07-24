@@ -1,0 +1,33 @@
+[project]
+name = "safaricom-financial-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-cloud-bigquery>=3.42.2",
+    "google-cloud-secret-manager>=2.30.0",
+    "google-cloud-storage>=3.13.0",
+    "minsearch>=0.2.0",
+    "numpy>=2.4.6",
+    "onnxruntime>=1.27.0",
+    "openai>=2.47.0",
+    "opentelemetry-api>=1.44.0",
+    "opentelemetry-sdk>=1.44.0",
+    "pandas>=3.0.5",
+    "pdfplumber>=0.11.10",
+    "python-dotenv>=1.2.2",
+    "qdrant-client>=1.18.0",
+    "streamlit>=1.60.0",
+    "tokenizers>=0.22.2",
+    "torch>=2.13.0",
+    "unstructured[pdf]>=0.24.1",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
