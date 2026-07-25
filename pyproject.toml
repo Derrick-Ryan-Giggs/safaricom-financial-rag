@@ -8,6 +8,7 @@ dependencies = [
     "google-cloud-bigquery>=3.42.2",
     "google-cloud-secret-manager>=2.30.0",
     "google-cloud-storage>=3.13.0",
+    "huggingface-hub>=1.24.0",
     "minsearch>=0.2.0",
     "numpy>=2.4.6",
     "onnxruntime>=1.27.0",
