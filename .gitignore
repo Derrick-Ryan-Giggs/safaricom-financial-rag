@@ -15,3 +15,5 @@ processed/*.jsonl
 .DS_Store
 chunks/*.jsonl
 embeddings/*.jsonl
+ground_truth/
+*.jsonl

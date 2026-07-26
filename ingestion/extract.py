@@ -34,7 +34,7 @@ MIN_CHARS = 20
 # Matches FY-prefixed years in any of the real filename conventions seen in
 # the source PDFs: FY14, FY18, FY_20, FY2019. Order matters -- 4-digit is
 # tried before 2-digit so "FY2019" isn't truncated to "FY20".
-FY_PATTERN = re.compile(r"FY[_-]?(\d{4}|\d{2})", re.IGNORECASE)
+FY_PATTERN = re.compile(r"FY[_-]?(\d{4}|\d{2}|\d{1})", re.IGNORECASE)
 
 # Fallback for filenames with no "FY" prefix at all (e.g. the 2014-2015
 # press commentary, which predates Safaricom's FY-prefixed naming).
@@ -62,13 +62,18 @@ def extract_fiscal_year(pdf_path: str) -> str:
     manually verified rather than silently trusted.
     """
     name = Path(pdf_path).name
-
     match = FY_PATTERN.search(name)
     if match:
         digits = match.group(1)
-        short = digits[-2:] if len(digits) == 4 else digits
+        if len(digits) == 4:
+            short = digits[-2:]
+        elif len(digits) == 1:
+            short = f"0{digits}"
+        else:
+            short = digits
         return f"FY{short}"
 
+    # No FY-prefixed match; try fallback 4-digit year pattern.
     fallback = FALLBACK_YEAR_PATTERN.search(name)
     if fallback:
         year = fallback.group(1)
