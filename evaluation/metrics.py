@@ -44,12 +44,13 @@ def hit_rate_and_mrr(
     minsearch_index,
     qdrant_client,
     embedder: OnnxEmbedder,
+    num_results: int = 5,
 ) -> dict:
     hits = 0
     reciprocal_ranks = []
 
     for pair in ground_truth:
-        results = hybrid_search(pair["question"], records, minsearch_index, qdrant_client, embedder)
+        results = hybrid_search(pair["question"], records, minsearch_index, qdrant_client, embedder, num_results=num_results)
         result_ids = [r["chunk_id"] for r in results]
 
         if pair["chunk_id"] in result_ids:
@@ -61,6 +62,7 @@ def hit_rate_and_mrr(
 
     n = len(ground_truth)
     return {
+        "k": num_results,
         "hit_rate": hits / n if n else 0.0,
         "mrr": sum(reciprocal_ranks) / n if n else 0.0,
         "total_questions": n,
@@ -82,6 +84,13 @@ def main():
     parser = argparse.ArgumentParser(description="Compute Hit Rate and MRR against ground truth.")
     parser.add_argument("--ground-truth", required=True)
     parser.add_argument("--chunks", required=True, help="Glob pattern for embedded JSONL files.")
+    parser.add_argument(
+        "--k",
+        type=int,
+        nargs="+",
+        default=[5],
+        help="One or more top-k cutoffs to evaluate, e.g. --k 2 5 10. Note: rag.py's production path uses k=5.",
+    )
     args = parser.parse_args()
 
     ground_truth = load_ground_truth(args.ground_truth)
@@ -91,8 +100,11 @@ def main():
     qdrant_client = build_qdrant_client(records)
     embedder = OnnxEmbedder()
 
-    metrics = hit_rate_and_mrr(ground_truth, records, minsearch_index, qdrant_client, embedder)
-    print(json.dumps(metrics, indent=2))
+    results = [
+        hit_rate_and_mrr(ground_truth, records, minsearch_index, qdrant_client, embedder, num_results=k)
+        for k in args.k
+    ]
+    print(json.dumps(results, indent=2))
 
 
 if __name__ == "__main__":

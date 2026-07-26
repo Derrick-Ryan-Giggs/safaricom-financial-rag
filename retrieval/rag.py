@@ -37,7 +37,7 @@ def answer_question(
     minsearch_index,
     qdrant_client,
     embedder: OnnxEmbedder,
-    num_results: int = 5,
+    num_results: int = 10,
 ) -> str:
     # num_results defaults higher here than config.NUM_RESULTS (2) -- "why"
     # questions need more supporting context across fiscal years, and since
