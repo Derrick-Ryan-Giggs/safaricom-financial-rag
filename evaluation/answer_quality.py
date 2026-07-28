@@ -20,6 +20,7 @@ Usage:
 
 import argparse
 import json
+import re
 import time
 
 from openai import OpenAI, RateLimitError
@@ -141,21 +142,57 @@ def run_evaluation(ground_truth: list[dict], records: list[dict], output_path: s
     print(f"Done. New verdicts this run: {verdict_counts}")
 
 
+REFUSAL_PATTERN = re.compile(
+    r"do(?:es)? ?n['o]t (?:contain|mention|provide|specify|state)"
+    r"|no information (?:is )?(?:provided |given )?.{0,30}(?:about|on|regarding)"
+    r"|could ?n['o]t find"
+    r"|cannot answer|can'?t answer"
+    r"|unable to (?:answer|determine|find)"
+    r"|don'?t have enough information"
+    r"|cannot (?:determine|verify|find)"
+    r"|not (?:directly )?(?:mentioned|stated|specified) in",
+    re.IGNORECASE,
+)
+
+
+def is_refusal(generated_answer: str) -> bool:
+    return bool(REFUSAL_PATTERN.search(generated_answer))
+
+
 def summarize(output_path: str) -> dict:
-    counts = {}
-    total = 0
+    records = []
     with open(output_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if line:
-                verdict = json.loads(line)["verdict"]
-                counts[verdict] = counts.get(verdict, 0) + 1
-                total += 1
+                records.append(json.loads(line))
+
+    total = len(records)
+    refusals = [r for r in records if is_refusal(r["generated_answer"])]
+    attempted = [r for r in records if not is_refusal(r["generated_answer"])]
+
+    def count_verdicts(subset):
+        counts = {}
+        for r in subset:
+            counts[r["verdict"]] = counts.get(r["verdict"], 0) + 1
+        return counts
+
+    verdicts_all = count_verdicts(records)
+    verdicts_attempted = count_verdicts(attempted)
+    n_attempted = len(attempted)
 
     return {
-        "total": total,
-        "counts": counts,
-        "relevant_rate": counts.get("RELEVANT", 0) / total if total else 0.0,
+        "total_questions": total,
+        "refusal_count": len(refusals),
+        "refusal_rate": len(refusals) / total if total else 0.0,
+        "attempted_count": n_attempted,
+        "verdict_counts_all_questions": verdicts_all,
+        "verdict_counts_among_attempted_only": verdicts_attempted,
+        "relevant_rate_among_attempted": verdicts_attempted.get("RELEVANT", 0) / n_attempted if n_attempted else 0.0,
+        "relevant_or_partly_rate_among_attempted": (
+            (verdicts_attempted.get("RELEVANT", 0) + verdicts_attempted.get("PARTLY_RELEVANT", 0)) / n_attempted
+            if n_attempted else 0.0
+        ),
     }
 
 
