@@ -107,6 +107,35 @@ def run_query(question: str) -> list[dict]:
     return rows
 
 
+def format_results(rows: list[dict]) -> str:
+    """
+    Format BigQuery result rows as readable text instead of a raw Python
+    repr (e.g. "[{'mpesa_revenue_kes_bn': Decimal('161.12')}]"). Single-row
+    results render as labeled lines; multi-row results render as a markdown
+    table, which Streamlit's st.markdown displays natively.
+
+    Column labels are a simple underscore-to-title-case conversion (e.g.
+    "mpesa_revenue_kes_bn" -> "Mpesa Revenue Kes Bn") -- not perfect (ideally
+    "M-PESA Revenue (KES Bn)"), but far more readable than raw column names
+    without needing a hardcoded per-column label map.
+    """
+    if not rows:
+        return "No matching data found in the mart tables."
+
+    def prettify_column(col: str) -> str:
+        return col.replace("_", " ").title()
+
+    if len(rows) == 1:
+        lines = [f"**{prettify_column(k)}**: {v}" for k, v in rows[0].items()]
+        return "\n\n".join(lines)
+
+    columns = list(rows[0].keys())
+    header = "| " + " | ".join(prettify_column(c) for c in columns) + " |"
+    separator = "| " + " | ".join(["---"] * len(columns)) + " |"
+    data_rows = ["| " + " | ".join(str(row.get(c, "")) for c in columns) + " |" for row in rows]
+    return "\n".join([header, separator] + data_rows)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Answer a structured question via generated BigQuery SQL.")
     parser.add_argument("--question", required=True)
