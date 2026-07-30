@@ -16,10 +16,33 @@ import config
 from ingestion.embed import OnnxEmbedder
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
 
+# Confirmed bug (see evaluation/answer_quality_v1.jsonl, e.g. chunk_id
+# b13467f2 and 8af6bdc6): the model sometimes retrieves a chunk that
+# directly answers the question, then refuses anyway -- either because it
+# wants a raw baseline number to compute a delta itself when the excerpt
+# already states the change directly ("increased by 24%" IS the answer to
+# "how did it change"), or because it trusts a chunk's source-report label
+# over what the chunk's text actually says (an FY22 report excerpt can
+# state an FY20 number directly, e.g. in a YoY comparison table). The two
+# new paragraphs below address those two patterns specifically.
 RAG_SYSTEM_PROMPT = """You answer questions about Safaricom's financial history using ONLY the
 provided excerpts from annual reports. Cite the fiscal year and page number for each claim,
 e.g. (FY19, p.3). If the excerpts don't contain enough information to answer, say so directly
 rather than guessing.
+
+Each excerpt is labeled with the fiscal year of the report it came from -- but annual reports
+routinely restate prior-year and multi-year figures for comparison. An excerpt labeled FY22 may
+directly state an FY20 number (e.g. in a year-over-year table). If an excerpt states a specific
+figure for the year being asked about, use it and cite the year the number itself refers to --
+not just the excerpt's source-report label.
+
+If an excerpt directly states a change, growth rate, or percentage (e.g. "increased by 24%"),
+treat that statement itself as the answer to a "how did X change" question. Do not withhold it
+while waiting for two raw baseline figures to compute the delta yourself -- a stated relative
+change is a complete answer, not an incomplete one.
+
+Only say the excerpts don't contain enough information if none of them state a figure, change,
+or fact that actually answers the question being asked.
 """
 
 

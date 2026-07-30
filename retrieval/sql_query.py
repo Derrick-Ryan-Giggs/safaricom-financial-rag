@@ -41,6 +41,19 @@ Schema:
 """
 
 
+class SQLGenerationError(Exception):
+    """
+    Raised when SQL generation or execution fails, but carries the SQL that
+    was attempted (or generated) so callers can still show it to the user --
+    e.g. for debugging hallucinated columns or invalid queries in the UI,
+    rather than only surfacing the raw BigQuery error text.
+    """
+
+    def __init__(self, message: str, sql: str | None = None):
+        super().__init__(message)
+        self.sql = sql
+
+
 def get_bq_client() -> bigquery.Client:
     return bigquery.Client(project=config.GCP_PROJECT_ID)
 
@@ -89,7 +102,19 @@ def is_safe_select(sql: str) -> bool:
     return not any(keyword in normalized for keyword in forbidden)
 
 
-def run_query(question: str) -> list[dict]:
+def run_query(question: str, return_sql: bool = False):
+    """
+    Generate and run SQL for `question`.
+
+    By default returns just the result rows (list[dict]), matching the
+    original behavior so the CLI entry point below doesn't change.
+
+    If return_sql=True, returns (rows, sql) on success. On failure (unsafe
+    SQL rejected, or BigQuery raises -- e.g. a hallucinated column or an
+    invalid GROUP BY), raises SQLGenerationError with the attempted SQL
+    attached as `.sql`, so a caller (like the Streamlit UI) can still show
+    what was generated even though it didn't run.
+    """
     client = get_bq_client()
     schema = get_mart_schema(client)
     sql = generate_sql(question, schema)
@@ -97,14 +122,30 @@ def run_query(question: str) -> list[dict]:
     print(f"Generated SQL:\n{sql}\n")
 
     if not is_safe_select(sql):
-        raise ValueError(f"Refusing to run non-SELECT or unsafe query: {sql}")
+        message = f"Refusing to run non-SELECT or unsafe query: {sql}"
+        if return_sql:
+            raise SQLGenerationError(message, sql)
+        raise ValueError(message)
 
     job_config = bigquery.QueryJobConfig(
         default_dataset=f"{config.GCP_PROJECT_ID}.{config.BIGQUERY_MART_DATASET}"
     )
-    query_job = client.query(sql, job_config=job_config)
-    rows = [dict(row) for row in query_job.result()]
+
+    try:
+        query_job = client.query(sql, job_config=job_config)
+        rows = [dict(row) for row in query_job.result()]
+    except Exception as e:
+        if return_sql:
+            raise SQLGenerationError(str(e), sql) from e
+        raise
+
+    if return_sql:
+        return rows, sql
     return rows
+
+
+def prettify_column(col: str) -> str:
+    return col.replace("_", " ").title()
 
 
 def format_results(rows: list[dict]) -> str:
@@ -121,9 +162,6 @@ def format_results(rows: list[dict]) -> str:
     """
     if not rows:
         return "No matching data found in the mart tables."
-
-    def prettify_column(col: str) -> str:
-        return col.replace("_", " ").title()
 
     if len(rows) == 1:
         lines = [f"**{prettify_column(k)}**: {v}" for k, v in rows[0].items()]

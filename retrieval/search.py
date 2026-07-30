@@ -12,6 +12,7 @@ Usage:
 import argparse
 import glob
 import json
+import re
 
 from minsearch import Index
 from qdrant_client import QdrantClient
@@ -23,6 +24,13 @@ from ingestion.embed import EMBEDDING_DIM, OnnxEmbedder
 RRF_K = 1  # matches the k value used in Module 4's evaluation
 COLLECTION_NAME = "safaricom_chunks"
 
+# Matches "FY09", "FY 09" -- the corpus's own canonical 2-digit format.
+_FY_SHORT = re.compile(r"\bFY\s?(\d{2})\b", re.IGNORECASE)
+# Matches "FY2009", "FY 2009".
+_FY_LONG = re.compile(r"\bFY\s?(20\d{2})\b", re.IGNORECASE)
+# Matches a bare 4-digit year, e.g. "in 2009", "fiscal year 2009".
+_YEAR_BARE = re.compile(r"\b(20\d{2})\b")
+
 
 def load_chunks(chunk_glob: str) -> list[dict]:
     records = []
@@ -33,6 +41,33 @@ def load_chunks(chunk_glob: str) -> list[dict]:
                 if line:
                     records.append(json.loads(line))
     return records
+
+
+def extract_fiscal_year(query: str) -> str | None:
+    """
+    Pull a fiscal year reference out of a question and normalize it to the
+    corpus's canonical 2-digit format (e.g. "FY09"), so it can be used to
+    steer keyword search toward the right year's chunks.
+
+    This exists because annual report body text almost never contains the
+    literal string "FY09" -- it says "year ended 31 March 2009" -- so a
+    question naming "FY09" has no strong keyword or semantic signal pointing
+    at the right chunks on its own; it's just competing against 18 other
+    years' worth of similarly-worded text (e.g. "revenue... increased...").
+    """
+    match = _FY_SHORT.search(query)
+    if match:
+        return f"FY{match.group(1)}"
+
+    match = _FY_LONG.search(query)
+    if match:
+        return f"FY{match.group(1)[-2:]}"
+
+    match = _YEAR_BARE.search(query)
+    if match:
+        return f"FY{match.group(1)[-2:]}"
+
+    return None
 
 
 def build_minsearch_index(records: list[dict]) -> Index:
@@ -82,9 +117,32 @@ def hybrid_search(
 ) -> list[dict]:
     by_id = {r["chunk_id"]: r for r in records}
 
-    keyword_hits = minsearch_index.search(query, num_results=num_results * 2)
+    target_year = extract_fiscal_year(query)
+
+    # If the question names a specific fiscal year, run a year-filtered
+    # keyword pass so those chunks aren't drowned out by ~18 other years'
+    # worth of similarly-worded text. This is a HARD filter, but only on
+    # the keyword side, and only as long as it finds something -- if no
+    # chunk is tagged with that year at all, fall back to the unfiltered
+    # pass rather than returning nothing from this ranking entirely.
+    if target_year:
+        keyword_hits = minsearch_index.search(
+            query, filter_dict={"fiscal_year": target_year}, num_results=num_results * 2
+        )
+        if not keyword_hits:
+            keyword_hits = minsearch_index.search(query, num_results=num_results * 2)
+    else:
+        keyword_hits = minsearch_index.search(query, num_results=num_results * 2)
+
     keyword_ranking = [hit["chunk_id"] for hit in keyword_hits]
 
+    # Vector search stays UNFILTERED deliberately. A report labeled FY22 can
+    # directly state an FY20 number (e.g. in a year-over-year comparison
+    # table) -- that's exactly the cross-year reference retrieval/rag.py's
+    # system prompt was updated to make use of. Hard-filtering vector search
+    # by the asked-about year would silently break that fix: RRF fusion lets
+    # a strong same-year keyword match and a strong cross-year semantic
+    # match both surface, rather than picking one strategy globally.
     query_vector = embedder.embed([query])[0]
     vector_response = qdrant_client.query_points(
         collection_name=COLLECTION_NAME,
