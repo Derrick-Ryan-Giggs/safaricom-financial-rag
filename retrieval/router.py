@@ -30,15 +30,16 @@ SQL: questions asking for specific numbers, metrics, or trends that live in stru
      (e.g. "What was M-PESA revenue in FY2025?", "Compare Ethiopia EBIT across FY23 and FY24").
 
 RAG: questions asking "why" or for narrative explanation, context, or qualitative detail found in
-     annual report text (e.g. "What factors drove M-PESA growth?", "Why did Ethiopia losses narrow?").
+     annual report text (e.g. "What factors drove M-PESA growth?", "Why did Ethiopia losses narrow?"),
+     OR any other genuine question specifically about Safaricom -- its business, leadership, history,
+     products, competitors -- that isn't asking for a structured metric, even if you're not sure the
+     annual reports actually cover it (e.g. "Who is Safaricom's CEO?", "When was Safaricom founded?").
+     When a question is genuinely about Safaricom but doesn't fit SQL, default to RAG, not OTHER --
+     RAG will correctly say so if the reports don't cover it.
 
-OTHER: anything that is NOT actually asking about Safaricom's financial data -- greetings ("hi",
-       "how are you"), small talk, or questions about this application/tool itself rather than
-       about Safaricom (e.g. "how do we get BigQuery to cover FY08-13", "what can you do").
-
-If a question is not clearly and specifically about Safaricom's financial history, M-PESA, or the
-Kenya/Ethiopia business, choose OTHER. Do not pick SQL or RAG just because a word like "data" or
-"BigQuery" appears in the sentence -- a question *about* the system is not a question *to* it.
+OTHER: only for input that is NOT a real question about Safaricom at all -- greetings ("hi", "how
+       are you"), small talk, or questions about this application/tool itself rather than about
+       Safaricom (e.g. "how do we get BigQuery to cover FY08-13", "what can you do").
 
 Respond with exactly one word: SQL, RAG, or OTHER. Nothing else.
 """

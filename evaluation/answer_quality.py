@@ -20,7 +20,6 @@ Usage:
 
 import argparse
 import json
-import re
 import time
 
 from openai import OpenAI, RateLimitError
@@ -28,7 +27,7 @@ from openai import OpenAI, RateLimitError
 import config
 from evaluation.metrics import load_ground_truth
 from ingestion.embed import OnnxEmbedder
-from retrieval.rag import answer_question
+from retrieval.rag import answer_question, is_refusal
 from retrieval.search import build_minsearch_index, build_qdrant_client, load_chunks
 
 JUDGE_PROMPT = """You are evaluating a generated answer against a known-correct reference answer.
@@ -142,23 +141,6 @@ def run_evaluation(ground_truth: list[dict], records: list[dict], output_path: s
     print(f"Done. New verdicts this run: {verdict_counts}")
 
 
-REFUSAL_PATTERN = re.compile(
-    r"do(?:es)? ?n['o]t (?:contain|mention|provide|specify|state)"
-    r"|no information (?:is )?(?:provided |given )?.{0,30}(?:about|on|regarding)"
-    r"|could ?n['o]t find"
-    r"|cannot answer|can'?t answer"
-    r"|unable to (?:answer|determine|find)"
-    r"|don'?t have enough information"
-    r"|cannot (?:determine|verify|find)"
-    r"|not (?:directly )?(?:mentioned|stated|specified) in",
-    re.IGNORECASE,
-)
-
-
-def is_refusal(generated_answer: str) -> bool:
-    return bool(REFUSAL_PATTERN.search(generated_answer))
-
-
 def summarize(output_path: str) -> dict:
     records = []
     with open(output_path, "r", encoding="utf-8") as f:
@@ -168,6 +150,10 @@ def summarize(output_path: str) -> dict:
                 records.append(json.loads(line))
 
     total = len(records)
+    # is_refusal now lives in retrieval/rag.py -- it's used live by
+    # ui/app.py to decide when to escalate to the web search fallback, so
+    # this evaluation script imports the same detector instead of keeping
+    # its own copy that could drift out of sync with production behavior.
     refusals = [r for r in records if is_refusal(r["generated_answer"])]
     attempted = [r for r in records if not is_refusal(r["generated_answer"])]
 

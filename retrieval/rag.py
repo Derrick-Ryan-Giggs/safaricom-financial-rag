@@ -9,12 +9,35 @@ Usage:
 """
 
 import argparse
+import re
 
 from openai import OpenAI
 
 import config
 from ingestion.embed import OnnxEmbedder
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
+
+# Moved here from evaluation/answer_quality.py: originally a diagnostic-only
+# regex for scoring the 500-question benchmark, now also used live by
+# ui/app.py to decide when to escalate to the web search fallback (only on
+# a genuine refusal, never on a partial-but-real answer -- see
+# retrieval/web_fallback.py for why that line is drawn deliberately strict).
+REFUSAL_PATTERN = re.compile(
+    r"do(?:es)? ?n['o]t (?:contain|mention|provide|specify|state)"
+    r"|no information (?:is )?(?:provided |given )?.{0,30}(?:about|on|regarding)"
+    r"|could ?n['o]t find"
+    r"|cannot answer|can'?t answer"
+    r"|unable to (?:answer|determine|find)"
+    r"|don'?t have enough information"
+    r"|cannot (?:determine|verify|find)"
+    r"|not (?:directly )?(?:mentioned|stated|specified) in",
+    re.IGNORECASE,
+)
+
+
+def is_refusal(generated_answer: str) -> bool:
+    return bool(REFUSAL_PATTERN.search(generated_answer))
+
 
 # Confirmed bug (see evaluation/answer_quality_v1.jsonl, e.g. chunk_id
 # b13467f2 and 8af6bdc6): the model sometimes retrieves a chunk that

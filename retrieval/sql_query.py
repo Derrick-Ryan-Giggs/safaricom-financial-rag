@@ -33,12 +33,27 @@ MART_TABLES = [
 SQL_SYSTEM_PROMPT = """You are a BigQuery SQL generator for a Safaricom financial data warehouse.
 
 You may ONLY generate SELECT statements. Never generate INSERT, UPDATE, DELETE, DROP, or DDL of any kind.
-Only query tables from the schema provided below -- do not invent table or column names.
+Only query tables and columns from the schema provided below -- do not invent table or column names.
+If nothing in the schema matches what's being asked, select the closest real column or the full row
+rather than inventing a plausible-sounding column name that doesn't exist.
+
+fiscal_year is stored as a full 4-digit integer (see the example row below) -- NOT a 2-digit short form.
+A question naming "FY26" means fiscal_year = 2026, not fiscal_year = 26.
+
 Return ONLY the SQL query, no explanation, no markdown code fences.
 
-Schema:
+Schema (each table includes one real example row so you can see actual value formats):
 {schema}
+
+Worked examples:
+Q: What was M-PESA revenue in FY2025?
+A: SELECT mpesa_revenue_kes_bn FROM mart_mpesa_growth_trends WHERE fiscal_year = 2025
+
+Q: Compare Ethiopia EBIT across FY23 and FY24.
+A: SELECT fiscal_year, et_ebit_kes_bn FROM mart_ke_et_trajectory WHERE fiscal_year IN (2023, 2024)
 """
+
+MAX_SQL_RETRIES = 2
 
 
 class SQLGenerationError(Exception):
@@ -60,8 +75,13 @@ def get_bq_client() -> bigquery.Client:
 
 def get_mart_schema(client: bigquery.Client) -> str:
     """
-    Introspect column names and types for each mart table, formatted as a
-    compact text block for the LLM prompt.
+    Introspect column names and types for each mart table, plus one real
+    sample row per table, formatted as a compact text block for the LLM
+    prompt. The sample row exists specifically so the model sees actual
+    value formats (e.g. fiscal_year=2026, not "26") instead of guessing --
+    confirmed via evaluation/sql_eval.py that without this, the generator
+    is inconsistent about whether fiscal_year is 2-digit or 4-digit for the
+    exact same question pattern.
     """
     lines = []
     for table_name in MART_TABLES:
@@ -75,18 +95,43 @@ def get_mart_schema(client: bigquery.Client) -> str:
         columns = ", ".join(f"{field.name} ({field.field_type})" for field in table.schema)
         lines.append(f"Table `{table_name}`: {columns}")
 
+        try:
+            sample_rows = list(client.query(f"SELECT * FROM `{table_ref}` LIMIT 1").result())
+            if sample_rows:
+                sample = dict(sample_rows[0])
+                sample_str = ", ".join(f"{k}={v}" for k, v in sample.items())
+                lines.append(f"  Example row: {sample_str}")
+        except Exception as e:
+            print(f"Warning: could not fetch sample row for {table_name}: {e}")
+
     return "\n".join(lines)
 
 
-def generate_sql(question: str, schema: str) -> str:
+def generate_sql(
+    question: str,
+    schema: str,
+    previous_attempt: str | None = None,
+    previous_error: str | None = None,
+) -> str:
     client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
+
+    messages = [
+        {"role": "system", "content": SQL_SYSTEM_PROMPT.format(schema=schema)},
+        {"role": "user", "content": question},
+    ]
+    if previous_attempt and previous_error:
+        messages.append({"role": "assistant", "content": previous_attempt})
+        messages.append({
+            "role": "user",
+            "content": (
+                f"That query failed with this error:\n{previous_error}\n\n"
+                "Correct it using only real tables and columns from the schema above."
+            ),
+        })
 
     response = client.chat.completions.create(
         model=config.LLM_MODEL,
-        messages=[
-            {"role": "system", "content": SQL_SYSTEM_PROMPT.format(schema=schema)},
-            {"role": "user", "content": question},
-        ],
+        messages=messages,
         temperature=0,
     )
     sql = response.choices[0].message.content.strip()
@@ -109,39 +154,49 @@ def run_query(question: str, return_sql: bool = False):
     By default returns just the result rows (list[dict]), matching the
     original behavior so the CLI entry point below doesn't change.
 
-    If return_sql=True, returns (rows, sql) on success. On failure (unsafe
-    SQL rejected, or BigQuery raises -- e.g. a hallucinated column or an
-    invalid GROUP BY), raises SQLGenerationError with the attempted SQL
-    attached as `.sql`, so a caller (like the Streamlit UI) can still show
-    what was generated even though it didn't run.
+    On a BigQuery execution failure (hallucinated column, invalid GROUP BY,
+    etc.), retries up to MAX_SQL_RETRIES times, feeding the actual error
+    back to the model so it can self-correct, before giving up.
+
+    If return_sql=True, returns (rows, sql) on success. On final failure
+    (unsafe SQL rejected, or all retries exhausted), raises
+    SQLGenerationError with the last attempted SQL attached as `.sql`, so a
+    caller (like the Streamlit UI) can still show what was generated even
+    though it didn't run.
     """
     client = get_bq_client()
     schema = get_mart_schema(client)
     sql = generate_sql(question, schema)
 
-    print(f"Generated SQL:\n{sql}\n")
-
-    if not is_safe_select(sql):
-        message = f"Refusing to run non-SELECT or unsafe query: {sql}"
-        if return_sql:
-            raise SQLGenerationError(message, sql)
-        raise ValueError(message)
-
     job_config = bigquery.QueryJobConfig(
         default_dataset=f"{config.GCP_PROJECT_ID}.{config.BIGQUERY_MART_DATASET}"
     )
 
-    try:
-        query_job = client.query(sql, job_config=job_config)
-        rows = [dict(row) for row in query_job.result()]
-    except Exception as e:
-        if return_sql:
-            raise SQLGenerationError(str(e), sql) from e
-        raise
+    last_error = None
+    for attempt in range(MAX_SQL_RETRIES + 1):
+        print(f"Generated SQL (attempt {attempt + 1}/{MAX_SQL_RETRIES + 1}):\n{sql}\n")
+
+        if not is_safe_select(sql):
+            message = f"Refusing to run non-SELECT or unsafe query: {sql}"
+            if return_sql:
+                raise SQLGenerationError(message, sql)
+            raise ValueError(message)
+
+        try:
+            query_job = client.query(sql, job_config=job_config)
+            rows = [dict(row) for row in query_job.result()]
+            if return_sql:
+                return rows, sql
+            return rows
+        except Exception as e:
+            last_error = str(e)
+            if attempt < MAX_SQL_RETRIES:
+                print(f"Query failed, retrying with error feedback: {last_error}")
+                sql = generate_sql(question, schema, previous_attempt=sql, previous_error=last_error)
 
     if return_sql:
-        return rows, sql
-    return rows
+        raise SQLGenerationError(last_error, sql)
+    raise RuntimeError(last_error)
 
 
 def prettify_column(col: str) -> str:
