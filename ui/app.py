@@ -95,15 +95,19 @@ def render_feedback_buttons(message):
     trace_id = message.get("trace_id")
     if not trace_id:
         return
-    col1, col2, _ = st.columns([1, 1, 8])
+    # Icon-only labels (not "Helpful" / "Not helpful") so both buttons are
+    # exactly one character wide -- guarantees identical size and padding
+    # regardless of container width, instead of relying on a column ratio
+    # wide enough to fit the longer label without wrapping.
+    col1, col2, _ = st.columns([1, 1, 10])
     with col1:
-        if st.button("Helpful", key=f"up_{trace_id}"):
+        if st.button("👍", key=f"up_{trace_id}", help="Helpful"):
             record_feedback(trace_id, message.get("question", ""), message["content"], 1)
-            st.success("Thanks for the feedback.")
+            st.toast("Thanks for the feedback!")
     with col2:
-        if st.button("Not helpful", key=f"down_{trace_id}"):
+        if st.button("👎", key=f"down_{trace_id}", help="Not helpful"):
             record_feedback(trace_id, message.get("question", ""), message["content"], -1)
-            st.info("Thanks -- noted.")
+            st.toast("Thanks -- noted.")
 
 
 def run_rag_fallback(question):
@@ -234,9 +238,9 @@ while i < len(messages):
                     key=f"edit_box_{message['id']}",
                     label_visibility="collapsed",
                 )
-                save_col, cancel_col, _ = st.columns([1, 1, 6])
+                save_col, cancel_col, _ = st.columns([2, 2, 6])
                 with save_col:
-                    if st.button("Save & resubmit", key=f"save_{message['id']}"):
+                    if st.button("Save", key=f"save_{message['id']}"):
                         st.session_state.messages = st.session_state.messages[:i]
                         st.session_state.editing_id = None
                         process_question(new_text)
@@ -247,10 +251,13 @@ while i < len(messages):
                         st.rerun()
         else:
             with st.chat_message("user"):
-                st.markdown(message["content"])
-                if st.button("Edit", key=f"edit_{message['id']}"):
-                    st.session_state.editing_id = message["id"]
-                    st.rerun()
+                text_col, edit_col = st.columns([20, 1])
+                with text_col:
+                    st.markdown(message["content"])
+                with edit_col:
+                    if st.button("✏️", key=f"edit_{message['id']}", help="Edit this question"):
+                        st.session_state.editing_id = message["id"]
+                        st.rerun()
     else:
         with st.chat_message("assistant"):
             st.markdown(message["content"])
