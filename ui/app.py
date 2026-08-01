@@ -28,9 +28,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import streamlit as st
 
 from ingestion.embed import OnnxEmbedder
+from monitoring.conversation_store import load_messages, save_message, truncate_from
 from monitoring.feedback import record_feedback
 from monitoring.tracer import get_tracer
-from retrieval.rag import answer_question, is_refusal
+from retrieval.rag import answer_from_chunks, is_refusal
 from retrieval.router import classify_question
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
 from retrieval.sql_query import SQLGenerationError, format_results, run_query
@@ -60,7 +61,7 @@ records, minsearch_index, qdrant_client, embedder = load_retrieval_stack()
 tracer = get_tracer()
 
 if "messages" not in st.session_state:
-    st.session_state.messages = []
+    st.session_state.messages = load_messages()
 if "editing_id" not in st.session_state:
     st.session_state.editing_id = None
 
@@ -112,24 +113,27 @@ def render_feedback_buttons(message):
 
 def run_rag_fallback(question):
     """
-    Search the full FY08-26 PDF corpus (jsonl chunks) directly. If that
-    comes back as a genuine refusal (not just a partial answer -- see
-    retrieval.rag.is_refusal), escalate once to a last-resort web search
-    and append it, clearly labeled as web content rather than Safaricom's
-    own filings. Returns (answer, sources, web_sources).
+    Search the full FY08-26 PDF corpus (jsonl chunks) directly -- ONE
+    hybrid_search call, whose result is used for both the Sources display
+    and generation (see answer_from_chunks' docstring in retrieval/rag.py).
+
+    Returns pieces separately (rag_answer, rag_was_refusal, web_answer,
+    sources, web_sources) rather than one pre-composed string, so each
+    caller can phrase its own final message without producing
+    contradictory back-to-back sentences like "here's what the reports
+    say" immediately followed by the model's own "the reports don't have
+    this" refusal text.
     """
-    sources = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=5)
-    rag_answer = answer_question(question, records, minsearch_index, qdrant_client, embedder)
+    sources = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=10)
+    rag_answer = answer_from_chunks(question, sources)
+    rag_was_refusal = is_refusal(rag_answer)
 
+    web_answer = None
     web_sources = []
-    if is_refusal(rag_answer):
+    if rag_was_refusal:
         web_answer, web_sources = web_search_answer(question)
-        rag_answer = (
-            f"{rag_answer}\n\n---\n\n**From the web** (not Safaricom's own filings -- "
-            f"verify independently):\n\n{web_answer}"
-        )
 
-    return rag_answer, sources, web_sources
+    return rag_answer, rag_was_refusal, web_answer, sources, web_sources
 
 
 def process_question(question):
@@ -142,11 +146,13 @@ def process_question(question):
     a resubmitted edit, so there's only one rendering path to keep in sync
     rather than two copies of the same routing logic.
     """
-    st.session_state.messages.append({
+    user_message = {
         "id": str(uuid.uuid4()),
         "role": "user",
         "content": question,
-    })
+    }
+    user_message["seq"] = save_message(user_message)
+    st.session_state.messages.append(user_message)
 
     trace_id = str(uuid.uuid4())
     sources = []
@@ -191,23 +197,45 @@ def process_question(question):
                     # Empty result set OR SQL generation/execution failed outright.
                     # Either way, the mart tables didn't answer this -- fall back
                     # to searching the PDF corpus directly (FY08-26, wider and
-                    # more complete than the mart tables), which itself escalates
-                    # to web search if it also comes back as a refusal.
-                    rag_answer, sources, web_sources = run_rag_fallback(question)
+                    # more complete than the mart tables).
+                    rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question)
                     reason = (
                         "didn't have this"
                         if rows == []
                         else "couldn't answer this (query generation failed)"
                     )
-                    answer = (
-                        f"The structured financial tables {reason} -- {MART_COVERAGE_NOTE}. "
-                        f"Here's what the annual reports say instead:\n\n{rag_answer}"
-                    )
+                    if not rag_was_refusal:
+                        answer = (
+                            f"The structured financial tables {reason} -- {MART_COVERAGE_NOTE}. "
+                            f"Here's what the annual reports say instead:\n\n{rag_answer}"
+                        )
+                    elif web_sources:
+                        answer = (
+                            f"The structured financial tables {reason} -- {MART_COVERAGE_NOTE} -- "
+                            f"and the annual report excerpts don't cover this either. Here's what a "
+                            f"web search found instead (not Safaricom's own filings -- verify "
+                            f"independently):\n\n{web_answer}"
+                        )
+                    else:
+                        answer = (
+                            f"The structured financial tables {reason} -- {MART_COVERAGE_NOTE} -- "
+                            f"and neither the annual report excerpts nor a web search turned up an "
+                            f"answer to this."
+                        )
             else:
-                rag_answer, sources, web_sources = run_rag_fallback(question)
-                answer = rag_answer
+                rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question)
+                if not rag_was_refusal:
+                    answer = rag_answer
+                elif web_sources:
+                    answer = (
+                        f"Safaricom's own annual reports don't cover this. Here's what a web "
+                        f"search found instead (not Safaricom's own filings -- verify "
+                        f"independently):\n\n{web_answer}"
+                    )
+                else:
+                    answer = "Neither the annual report excerpts nor a web search turned up an answer to this."
 
-    st.session_state.messages.append({
+    assistant_message = {
         "id": str(uuid.uuid4()),
         "role": "assistant",
         "content": answer,
@@ -216,7 +244,9 @@ def process_question(question):
         "generated_sql": generated_sql,
         "trace_id": trace_id,
         "question": question,
-    })
+    }
+    assistant_message["seq"] = save_message(assistant_message)
+    st.session_state.messages.append(assistant_message)
 
 
 # Single render pass over all messages. User messages get an Edit affordance;
@@ -241,6 +271,8 @@ while i < len(messages):
                 save_col, cancel_col, _ = st.columns([2, 2, 6])
                 with save_col:
                     if st.button("Save", key=f"save_{message['id']}"):
+                        if message.get("seq") is not None:
+                            truncate_from(message["seq"])
                         st.session_state.messages = st.session_state.messages[:i]
                         st.session_state.editing_id = None
                         process_question(new_text)
@@ -251,13 +283,10 @@ while i < len(messages):
                         st.rerun()
         else:
             with st.chat_message("user"):
-                text_col, edit_col = st.columns([20, 1])
-                with text_col:
-                    st.markdown(message["content"])
-                with edit_col:
-                    if st.button("✏️", key=f"edit_{message['id']}", help="Edit this question"):
-                        st.session_state.editing_id = message["id"]
-                        st.rerun()
+                st.markdown(message["content"])
+                if st.button("✏️ Edit", key=f"edit_{message['id']}", help="Edit this question"):
+                    st.session_state.editing_id = message["id"]
+                    st.rerun()
     else:
         with st.chat_message("assistant"):
             st.markdown(message["content"])

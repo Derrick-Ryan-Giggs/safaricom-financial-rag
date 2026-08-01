@@ -77,19 +77,24 @@ def build_prompt(question: str, chunks: list[dict]) -> str:
     return f"Excerpts:\n{context}\n\nQuestion: {question}"
 
 
-def answer_question(
-    question: str,
-    records: list[dict],
-    minsearch_index,
-    qdrant_client,
-    embedder: OnnxEmbedder,
-    num_results: int = 10,
-) -> str:
-    # num_results defaults higher here than config.NUM_RESULTS (2) -- "why"
-    # questions need more supporting context across fiscal years, and since
-    # chunks here top out around 128 tokens (confirmed empirically), even
-    # 5 chunks stays well within Groq's 6,000 TPM limit.
-    chunks = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=num_results)
+def answer_from_chunks(question: str, chunks: list[dict]) -> str:
+    """
+    Generate an answer from an already-retrieved set of chunks.
+
+    Split out from answer_question() specifically so a caller that needs to
+    both DISPLAY the retrieved chunks (ui/app.py's Sources expander) and use
+    them for generation can do ONE hybrid_search call and guarantee both use
+    the identical chunks. Previously, ui/app.py called hybrid_search()
+    separately (num_results=5, for the Sources panel) from what
+    answer_question() used internally (num_results=10, for generation) --
+    two independent searches with different result-set sizes, not
+    guaranteed to return the same top chunks. That meant the "Sources"
+    shown to the user weren't necessarily what the model actually saw,
+    which could look exactly like an unexplained refusal despite a source
+    panel that clearly contains the answer (confirmed live: a "which two
+    cities" question refused, while the displayed Sources included the
+    exact chunk stating "available in Nairobi and Mombasa").
+    """
     prompt = build_prompt(question, chunks)
 
     client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
@@ -102,6 +107,30 @@ def answer_question(
         temperature=0.2,
     )
     return response.choices[0].message.content
+
+
+def answer_question(
+    question: str,
+    records: list[dict],
+    minsearch_index,
+    qdrant_client,
+    embedder: OnnxEmbedder,
+    num_results: int = 10,
+) -> str:
+    """
+    Convenience wrapper for CLI/standalone use (retrieves then answers in
+    one call). ui/app.py should prefer calling hybrid_search() once and
+    passing the result to answer_from_chunks() directly, so the same
+    chunks are used for both the Sources display and generation -- see
+    answer_from_chunks()'s docstring for why that distinction matters.
+
+    num_results defaults higher here than config.NUM_RESULTS (2) -- "why"
+    questions need more supporting context across fiscal years, and since
+    chunks here top out around 128 tokens (confirmed empirically), even
+    10 chunks stays well within Groq's 6,000 TPM limit.
+    """
+    chunks = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=num_results)
+    return answer_from_chunks(question, chunks)
 
 
 def main():
