@@ -31,7 +31,7 @@ from ingestion.embed import OnnxEmbedder
 from monitoring.conversation_store import load_messages, save_message, truncate_from
 from monitoring.feedback import record_feedback
 from monitoring.tracer import get_tracer
-from retrieval.rag import answer_from_chunks, is_refusal
+from retrieval.rag import answer_from_chunks, is_refusal, verify_no_answer
 from retrieval.router import classify_question
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
 from retrieval.sql_query import SQLGenerationError, format_results, run_query
@@ -127,6 +127,16 @@ def run_rag_fallback(question):
     sources = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=10)
     rag_answer = answer_from_chunks(question, sources)
     rag_was_refusal = is_refusal(rag_answer)
+
+    if rag_was_refusal:
+        # Confirmed via live testing (three separate instances now): the
+        # first pass sometimes refuses even when a chunk directly states
+        # the answer. One stricter, narrower re-check over the SAME chunks
+        # before accepting the refusal and escalating to web search.
+        rechecked = verify_no_answer(question, sources)
+        if rechecked is not None:
+            rag_answer = rechecked
+            rag_was_refusal = False
 
     web_answer = None
     web_sources = []

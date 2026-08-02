@@ -46,7 +46,7 @@ def is_refusal(generated_answer: str) -> bool:
 # already states the change directly ("increased by 24%" IS the answer to
 # "how did it change"), or because it trusts a chunk's source-report label
 # over what the chunk's text actually says (an FY22 report excerpt can
-# state an FY20 number directly, e.g. in a YoY comparison table). The two
+# state an FY20 number directly, e.g. in a year-over-year table). The two
 # new paragraphs below address those two patterns specifically.
 RAG_SYSTEM_PROMPT = """You answer questions about Safaricom's financial history using ONLY the
 provided excerpts from annual reports. Cite the fiscal year and page number for each claim,
@@ -67,6 +67,55 @@ change is a complete answer, not an incomplete one.
 Only say the excerpts don't contain enough information if none of them state a figure, change,
 or fact that actually answers the question being asked.
 """
+
+# This is a THIRD confirmed instance of the refusal-despite-evidence bug
+# (see evaluation/answer_quality_v1.jsonl for the first two: chunk_id
+# b13467f2, 8af6bdc6). This one is more basic than either -- no cross-year
+# label confusion, no computed delta needed. A chunk stated "Our 4G network
+# is now available in Nairobi and Mombasa" verbatim, in response to "which
+# two cities are currently available," and the model still refused. Three
+# recurrences of the same failure mode in three different shapes means
+# another prompt clause is unlikely to be the fix -- RAG_SYSTEM_PROMPT
+# already has two targeted paragraphs for the first two patterns and this
+# is a new one anyway. Instead: force one stricter, narrower re-read of the
+# SAME chunks before accepting a refusal, rather than trying to prevent
+# every possible refusal shape via prompt engineering alone.
+VERIFY_REFUSAL_PROMPT = """You previously said the excerpts below don't contain enough information to
+answer the question. Before accepting that, re-read every excerpt again, one at a time.
+
+If ANY excerpt states an answer directly -- even a single short sentence, a bare fact, or a number
+-- state that answer now, plainly, citing the fiscal year and page number, e.g. (FY19, p.3).
+
+Only if, after this careful re-check, truly none of the excerpts state anything that answers the
+question, respond with exactly this and nothing else: NO_ANSWER_FOUND
+"""
+
+
+def verify_no_answer(question: str, chunks: list[dict]) -> str | None:
+    """
+    Run only when the first generation pass looked like a refusal (see
+    is_refusal). Forces a second, narrower-purpose pass over the exact
+    same chunks -- "just check if any excerpt states this, quote it" is a
+    meaningfully different (and often more reliable) task for a small
+    model than the general "answer this question, cite sources,
+    distinguish years" instruction used the first time. Returns the
+    corrected answer if the re-check finds one, or None if the refusal
+    holds even on careful re-reading.
+    """
+    prompt = build_prompt(question, chunks)
+    client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
+    response = client.chat.completions.create(
+        model=config.LLM_MODEL,
+        messages=[
+            {"role": "system", "content": VERIFY_REFUSAL_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0,
+    )
+    result = response.choices[0].message.content.strip()
+    if result == "NO_ANSWER_FOUND" or is_refusal(result):
+        return None
+    return result
 
 
 def build_prompt(question: str, chunks: list[dict]) -> str:
