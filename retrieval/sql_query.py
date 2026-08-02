@@ -34,8 +34,12 @@ SQL_SYSTEM_PROMPT = """You are a BigQuery SQL generator for a Safaricom financia
 
 You may ONLY generate SELECT statements. Never generate INSERT, UPDATE, DELETE, DROP, or DDL of any kind.
 Only query tables and columns from the schema provided below -- do not invent table or column names.
-If nothing in the schema matches what's being asked, select the closest real column or the full row
-rather than inventing a plausible-sounding column name that doesn't exist.
+
+If nothing in the schema -- no table, no column -- can answer the question, do NOT invent a
+plausible-sounding name, and do NOT write a placeholder query like "SELECT NULL" just to produce
+something that runs without error. A query that runs but answers nothing is worse than admitting
+there's no match: it looks like a real (empty) result instead of an honest "not available here."
+Instead, respond with exactly this and nothing else: NO_MATCHING_COLUMN
 
 fiscal_year is stored as a full 4-digit integer (see the example row below) -- NOT a 2-digit short form.
 A question naming "FY26" means fiscal_year = 2026, not fiscal_year = 26.
@@ -51,6 +55,9 @@ A: SELECT mpesa_revenue_kes_bn FROM mart_mpesa_growth_trends WHERE fiscal_year =
 
 Q: Compare Ethiopia EBIT across FY23 and FY24.
 A: SELECT fiscal_year, et_ebit_kes_bn FROM mart_ke_et_trajectory WHERE fiscal_year IN (2023, 2024)
+
+Q: What was Safaricom's cash and cash equivalents as of 31-Mar-24?
+A: NO_MATCHING_COLUMN
 """
 
 MAX_SQL_RETRIES = 2
@@ -175,6 +182,22 @@ def run_query(question: str, return_sql: bool = False):
     last_error = None
     for attempt in range(MAX_SQL_RETRIES + 1):
         print(f"Generated SQL (attempt {attempt + 1}/{MAX_SQL_RETRIES + 1}):\n{sql}\n")
+
+        if sql.strip() == "NO_MATCHING_COLUMN":
+            # The model explicitly determined nothing in the schema answers
+            # this -- treat it the same as a query that ran and found zero
+            # rows, rather than an error. This is what stops attempt 2 from
+            # degenerating into a placeholder like "SELECT NULL" (confirmed
+            # live: a cash-and-equivalents question, once no real column
+            # existed, produced a syntactically valid but meaningless query
+            # instead of admitting the mismatch) -- callers already have
+            # correct handling for "SQL succeeded, empty result" (fall back
+            # to RAG), so mapping this to the same outcome is the correct
+            # semantics, not a special case to add elsewhere.
+            print("Model determined no schema column matches this question.")
+            if return_sql:
+                return [], sql
+            return []
 
         if not is_safe_select(sql):
             message = f"Refusing to run non-SELECT or unsafe query: {sql}"
