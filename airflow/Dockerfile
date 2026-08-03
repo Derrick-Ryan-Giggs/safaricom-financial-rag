@@ -24,7 +24,18 @@
 FROM apache/airflow:2.9.3-python3.12
 
 USER root
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# The official Airflow base image pre-configures extra third-party apt
+# sources (MariaDB, PostgreSQL client repos) for optional features this
+# Dockerfile doesn't use -- only tesseract/poppler/libgl1/libglib2.0-0 are
+# needed, all in Debian's own repos. Removing the unneeded ones avoids
+# depending on apt.postgresql.org, which has been intermittently failing
+# with "Resource temporarily unavailable" during `apt-get update` (a
+# transient/resource error, not a bandwidth issue -- but no reason to
+# depend on a repo we never install anything from anyway). Retries added
+# as a safety net for the repos we do actually need.
+RUN rm -f /etc/apt/sources.list.d/*postgresql* /etc/apt/sources.list.d/*pgdg* /etc/apt/sources.list.d/*mariadb* \
+    && apt-get update -o Acquire::Retries=3 \
+    && apt-get install -y --no-install-recommends -o Acquire::Retries=3 \
     tesseract-ocr \
     poppler-utils \
     libgl1 \

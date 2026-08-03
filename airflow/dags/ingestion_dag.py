@@ -35,13 +35,23 @@ Usage:
 from __future__ import annotations
 
 import glob
+import os
 import subprocess
 from pathlib import Path
 
 import pendulum
 from airflow.decorators import dag, task
 
-PROJECT_ROOT = "/opt/airflow/project"
+# Was hardcoded to /opt/airflow/project (a Docker container path) --
+# switched to an env var with the real host path as default, since running
+# Airflow natively (not in Docker) turned out to be the much lower-friction
+# path: every task here already shells out via subprocess to `uv run
+# python -m ...` rather than importing project code into Airflow's own
+# process, so Airflow never actually needed to run inside the same
+# container as the project in the first place.
+PROJECT_ROOT = os.environ.get(
+    "SAFARICOM_RAG_PROJECT_ROOT", "/mnt/storage/Desktop/safaricom-financial-rag"
+)
 
 
 def run(*args: str) -> None:
