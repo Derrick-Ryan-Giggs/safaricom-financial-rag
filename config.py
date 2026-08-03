@@ -28,5 +28,5 @@ EMBEDDING_MODEL_PATH = "models/Xenova/all-MiniLM-L6-v2"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 NUM_RESULTS = 5
-LLM_MODEL = "llama-3.1-8b-instant"
+LLM_MODEL = LLM_MODEL = "openai/gpt-oss-120b"
 GCP_PROJECT_ID = PROJECT_ID
