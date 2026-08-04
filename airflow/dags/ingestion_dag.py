@@ -54,9 +54,36 @@ PROJECT_ROOT = os.environ.get(
 )
 
 
+def load_project_env() -> dict:
+    """
+    Airflow's own process doesn't inherit this project's .env the way an
+    interactive shell does. direnv only auto-loads GCP_PROJECT_ID and
+    GOOGLE_APPLICATION_CREDENTIALS when a shell `cd`s into the project
+    directory -- but Airflow was started from the home directory, in a
+    completely separate venv, so it never picked those up. Google's client
+    libraries then silently fall back to whatever Application Default
+    Credentials happen to be cached on the machine, which can resolve to a
+    completely unrelated GCP project (confirmed live: a chunk_one failure
+    with PERMISSION_DENIED against "dtc-de-course-484520" -- an old,
+    unrelated course project, not safaricom-intelligence). Reading .env
+    directly and merging it into each subprocess call's environment fixes
+    this regardless of how or where Airflow itself happens to be started.
+    """
+    env_vars = dict(os.environ)
+    env_path = Path(PROJECT_ROOT) / ".env"
+    if env_path.exists():
+        for line in env_path.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            env_vars[key.strip()] = value.strip().strip('"').strip("'")
+    return env_vars
+
+
 def run(*args: str) -> None:
     """Run a project script the same way you would by hand: `uv run python -m ...`."""
-    subprocess.run(["uv", "run", "python", "-m", *args], cwd=PROJECT_ROOT, check=True)
+    subprocess.run(["uv", "run", "python", "-m", *args], cwd=PROJECT_ROOT, check=True, env=load_project_env())
 
 
 @dag(
