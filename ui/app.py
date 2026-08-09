@@ -294,7 +294,7 @@ while i < len(messages):
         else:
             with st.chat_message("user"):
                 st.markdown(message["content"])
-                if st.button("✏️ Edit", key=f"edit_{message['id']}", help="Edit this question"):
+                if st.button(" Edit", key=f"edit_{message['id']}", help="Edit this question"):
                     st.session_state.editing_id = message["id"]
                     st.rerun()
     else:
