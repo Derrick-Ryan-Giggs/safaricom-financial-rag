@@ -61,7 +61,8 @@ def load_processed_questions(output_path: str) -> set:
             for line in f:
                 line = line.strip()
                 if line:
-                    processed.add(json.loads(line)["question"])
+                    record = json.loads(line)
+                    processed.add((record["table"], record["column"], record["fiscal_year"]))
     except FileNotFoundError:
         pass
     return processed
@@ -69,7 +70,7 @@ def load_processed_questions(output_path: str) -> set:
 
 def run_evaluation(ground_truth: list[dict], output_path: str) -> None:
     already_done = load_processed_questions(output_path)
-    remaining = [g for g in ground_truth if g["question"] not in already_done]
+    remaining = [ g for g in ground_truth if (g["table"], g["column"], g["fiscal_year"]) not in already_done ]
 
     if already_done:
         print(f"Resuming: {len(already_done)} questions already processed, {len(remaining)} remaining.")

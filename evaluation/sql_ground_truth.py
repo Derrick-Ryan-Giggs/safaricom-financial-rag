@@ -100,12 +100,12 @@ def generate_ground_truth(client, table_name: str) -> list[dict]:
             if value is None:
                 continue
             records.append({
-                "question": f"What was {prettify_column(col)} in {fy_label}?",
-                "table": table_name,
-                "column": col,
-                "fiscal_year": fy_label,
-                "expected_value": str(value),
-            })
+    "question": f"What was {prettify_column(col)} in {fy_label}?",
+    "table": table_name,
+    "column": col,
+    "fiscal_year": fy_label,
+    "expected_value": str(value),
+})
 
     print(f"{table_name}: {len(records)} ground-truth questions generated.")
     return records

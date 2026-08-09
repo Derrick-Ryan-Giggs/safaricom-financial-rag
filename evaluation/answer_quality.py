@@ -59,19 +59,20 @@ def call_with_backoff(fn, *args, **kwargs):
 
 def judge_answer(client: OpenAI, question: str, reference_answer: str, generated_answer: str) -> str:
     response = call_with_backoff(
-        client.chat.completions.create,
-        model=config.LLM_MODEL,
-        messages=[{
-            "role": "user",
-            "content": JUDGE_PROMPT.format(
-                question=question,
-                reference_answer=reference_answer,
-                generated_answer=generated_answer,
-            ),
-        }],
-        temperature=0,
-        max_tokens=5,
-    )
+    client.chat.completions.create,
+    model="config.LLM_MODEL",
+    messages=[{
+        "role": "user",
+        "content": JUDGE_PROMPT.format(
+            question=question,
+            reference_answer=reference_answer,
+            generated_answer=generated_answer,
+        ),
+    }],
+    temperature=0,
+    max_tokens=300,
+)
+    
     if response is None:
         return "UNKNOWN"
 
@@ -104,7 +105,7 @@ def run_evaluation(ground_truth: list[dict], records: list[dict], output_path: s
     if already_done:
         print(f"Resuming: {len(already_done)} questions already processed, {len(remaining)} remaining.")
 
-    verdict_counts = {"RELEVANT": 0, "PARTLY_RELEVANT": 0, "NOT_RELEVANT": 0, "UNKNOWN": 0}
+    verdict_counts = {"RELEVANT": 0, "PARTLY_RELEVANT": 0, "NOT_RELEVANT": 0, "UNKNOWN": 0, "REFUSED": 0}
 
     with open(output_path, "a", encoding="utf-8") as outfile:
         for i, pair in enumerate(remaining):
@@ -116,7 +117,11 @@ def run_evaluation(ground_truth: list[dict], records: list[dict], output_path: s
                 print(f"Warning: skipping question after failed generation: {pair['question'][:80]}")
                 continue
 
-            verdict = judge_answer(client, pair["question"], pair["reference_answer"], generated)
+            if is_refusal(generated):
+                verdict = "REFUSED"
+            else:
+                verdict = judge_answer(client, pair["question"], pair["reference_answer"], generated)
+
             verdict_counts[verdict] = verdict_counts.get(verdict, 0) + 1
 
             record = {
