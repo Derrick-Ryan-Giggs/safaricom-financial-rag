@@ -29,11 +29,13 @@ from openai import OpenAI
 
 import config
 
-WEB_SYSTEM_PROMPT = """You answer questions using ONLY the web search results provided below.
-Cite the source for each claim using its number, e.g. (Source 2). If the results don't contain
-enough information to answer, say so directly rather than guessing. Make it clear this
-information comes from a general web search, not from Safaricom's own annual reports or
-regulatory filings -- it has not been verified against a primary source.
+WEB_SYSTEM_PROMPT = """You just performed a live web search for this question. Answer using
+ONLY the search results below, which you yourself retrieved just now -- do not refer to them
+as having been provided to you by someone else. Cite the source for each claim using its
+number, e.g. (Source 2). If the results don't contain enough information to answer, say so
+directly rather than guessing. Make clear to the reader that this information comes from a
+general web search, not from Safaricom's own annual reports or regulatory filings -- it has
+not been verified against a primary source.
 """
 
 MAX_RESULTS = 5

@@ -40,7 +40,7 @@ from retrieval.web_fallback import web_search_answer
 CHUNKS_GLOB = "embeddings/*.jsonl"
 
 MART_COVERAGE_NOTE = (
-    "the mart tables cover a subset of FY14-FY26, with some years/columns incomplete"
+    "the mart tables cover a subset of FY08-FY26, with some years/columns incomplete"
 )
 
 st.set_page_config(page_title="Safaricom Financial Intelligence")

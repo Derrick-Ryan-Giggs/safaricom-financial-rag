@@ -53,13 +53,13 @@ def classify_question(question: str) -> str:
     client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
     response = client.chat.completions.create(
-        model=config.LLM_MODEL,
+        model="llama-3.1-8b-instant",  # not config.LLM_MODEL -- classification doesn't need reasoning
         messages=[
             {"role": "system", "content": ROUTER_SYSTEM_PROMPT},
             {"role": "user", "content": question},
         ],
         temperature=0,
-        max_tokens=5,
+        max_tokens=5,   # fine again, this model doesn't burn tokens on hidden reasoning
     )
     label = response.choices[0].message.content.strip().upper()
     return label if label in ("SQL", "RAG", "OTHER") else "RAG"  # default to RAG if the model returns anything unexpected
