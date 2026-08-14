@@ -18,7 +18,15 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExporter, SpanExportResult
 
-DB_PATH = "monitoring/traces.db"
+import os
+
+# Overridable so a Docker named volume can persist this file at a path
+# outside the source tree (e.g. /data/traces.db) without shadowing
+# tracer.py/feedback.py themselves -- mounting a volume directly at
+# monitoring/ would wipe out this module's own source code from the
+# container's view. Defaults to the original relative path for local,
+# non-Docker development.
+DB_PATH = os.environ.get("TRACES_DB_PATH", "monitoring/traces.db")
 
 _initialized = False
 
