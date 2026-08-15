@@ -23,10 +23,14 @@ dependencies = [
     "qdrant-client>=1.18.0",
     "streamlit>=1.60.0",
     "tokenizers>=0.22.2",
+    "uvloop>=0.22.1",
+]
+
+[project.optional-dependencies]
+extract = [
     "torch>=2.13.0",
     "torchvision>=0.28.0",
     "unstructured[pdf]>=0.24.1",
-    "uvloop>=0.22.1",
 ]
 
 [[tool.uv.index]]

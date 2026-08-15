@@ -1,0 +1,25 @@
+# Local environments -- app installs its own deps via uv sync in the image
+.venv/
+**/__pycache__/
+*.pyc
+
+.git/
+.gitignore
+
+# Bind-mounted at runtime (x-app-common volumes), no need to bake into image
+embeddings/
+models/
+
+# Raw source PDFs, not needed by the app/dashboard runtime
+data/raw/
+data/processed/
+
+# Not needed inside the app/dashboard image
+airflow/
+docker/
+
+# Secrets -- mounted read-only via docker-compose, never baked in
+*.env
+.env
+
+README.md

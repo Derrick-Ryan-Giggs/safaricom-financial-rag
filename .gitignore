@@ -17,3 +17,4 @@ chunks/*.jsonl
 embeddings/*.jsonl
 ground_truth/
 *.jsonl
+build.log

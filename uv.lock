@@ -3116,12 +3116,16 @@ dependencies = [
     { name = "streamlit" },
     { name = "tokenizers", version = "0.22.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13' or sys_platform != 'win32'" },
     { name = "tokenizers", version = "0.23.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13' and sys_platform == 'win32'" },
+    { name = "uvloop" },
+]
+
+[package.optional-dependencies]
+extract = [
     { name = "torch", version = "2.13.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
     { name = "torchvision", version = "0.28.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
     { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
     { name = "unstructured", extra = ["pdf"] },
-    { name = "uvloop" },
 ]
 
 [package.metadata]
@@ -3144,11 +3148,12 @@ requires-dist = [
     { name = "qdrant-client", specifier = ">=1.18.0" },
     { name = "streamlit", specifier = ">=1.60.0" },
     { name = "tokenizers", specifier = ">=0.22.2" },
-    { name = "torch", specifier = ">=2.13.0", index = "https://download.pytorch.org/whl/cpu" },
-    { name = "torchvision", specifier = ">=0.28.0", index = "https://download.pytorch.org/whl/cpu" },
-    { name = "unstructured", extras = ["pdf"], specifier = ">=0.24.1" },
+    { name = "torch", marker = "extra == 'extract'", specifier = ">=2.13.0", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "torchvision", marker = "extra == 'extract'", specifier = ">=0.28.0", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "unstructured", extras = ["pdf"], marker = "extra == 'extract'", specifier = ">=0.24.1" },
     { name = "uvloop", specifier = ">=0.22.1" },
 ]
+provides-extras = ["extract"]
 
 [[package]]
 name = "safetensors"

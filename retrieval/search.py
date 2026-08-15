@@ -22,6 +22,7 @@ from ingestion.embed import EMBEDDING_DIM, OnnxEmbedder
 
 RRF_K = 1  # matches the k value used in Module 4's evaluation
 COLLECTION_NAME = "safaricom_chunks"
+UPSERT_BATCH_SIZE = 256  # keeps each request under Qdrant's default 32MB payload limit
 
 
 def load_chunks(chunk_glob: str) -> list[dict]:
@@ -80,7 +81,9 @@ def build_qdrant_client(records: list[dict]) -> QdrantClient:
             PointStruct(id=i, vector=record["embedding"], payload=record)
             for i, record in enumerate(records)
         ]
-        client.upsert(collection_name=COLLECTION_NAME, points=points)
+        for i in range(0, len(points), UPSERT_BATCH_SIZE):
+            batch = points[i : i + UPSERT_BATCH_SIZE]
+            client.upsert(collection_name=COLLECTION_NAME, points=batch)
 
     return client
 
