@@ -313,11 +313,10 @@ finalized.
 - The web search fallback is intentionally unverified against a primary
   source and says so explicitly in its own answers; treat it as a last
   resort, not a citation-quality source the way the RAG path is.
-- The `airflow/` directory, and this README, are not yet pushed to the
-  repository's `master` branch as of this writing; a fresh clone will have
-  the code for everything documented above but not yet the orchestration
-  layer. Commit and push before treating this as fully reproducible from
-  a clean checkout.
+- `ingestion/upload_to_bigquery.py` loads chunks and embeddings into
+  `safaricom_rag.chunks` for archival/inspection, but retrieval itself
+  still reads from local `embeddings/*.jsonl`, not from that table. The
+  BigQuery chunks table is not yet in the runtime retrieval path.
 
 ## Reproducibility: How to Run
 
@@ -332,23 +331,30 @@ Requires a `.env` file with `GOOGLE_APPLICATION_CREDENTIALS` and
 names) loads from GCP Secret Manager at runtime, never hardcoded and never
 committed.
 
-**Ingestion** (from the `airflow/` directory):
+**Full stack (recommended)** — `docker-compose.yml` lives at the repo
+root and brings up Postgres, Airflow, Qdrant, the chat app, and the
+feedback dashboard together:
 ```bash
 docker compose up airflow-init
 docker compose up
 ```
-Airflow UI at `http://localhost:8080`. Unpause and trigger
-`safaricom_ingestion`; it discovers PDFs and dynamically maps
-extract/chunk/embed tasks per document, then refreshes the BigQuery
-chunks/embeddings table and uploads to GCS.
+- Airflow UI: `http://localhost:8081` — unpause and trigger
+  `safaricom_ingestion`; it discovers PDFs and dynamically maps
+  extract/chunk/embed tasks per document, then refreshes the BigQuery
+  chunks table and uploads to GCS.
+- Chat app: `http://localhost:8601`
+- Feedback dashboard: `http://localhost:8602`
 
-**Chat interface**:
+The `app` and `dashboard` services expect a GCP service account key at
+`~/.gcp/safaricom-intelligence-sa.json` on the host (bind-mounted
+read-only into the container); adjust that path in `docker-compose.yml`
+if your key lives elsewhere.
+
+**Running the chat app or dashboard outside Docker** (e.g. for faster
+iteration during development):
 ```bash
+docker compose up qdrant     # search.py needs a reachable Qdrant server
 uv run streamlit run ui/app.py
-```
-
-**Feedback dashboard**:
-```bash
 uv run streamlit run monitoring/dashboard.py
 ```
 
