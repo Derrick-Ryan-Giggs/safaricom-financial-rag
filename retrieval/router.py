@@ -53,7 +53,7 @@ def classify_question(question: str) -> str:
     client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",  # not config.LLM_MODEL -- classification doesn't need reasoning
+        model="openai/gpt-oss-20b",  # not config.LLM_MODEL -- classification doesn't need reasoning
         messages=[
             {"role": "system", "content": ROUTER_SYSTEM_PROMPT},
             {"role": "user", "content": question},
