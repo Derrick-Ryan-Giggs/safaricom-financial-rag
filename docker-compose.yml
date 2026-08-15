@@ -1,0 +1,112 @@
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: airflow/Dockerfile
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - .:/opt/airflow/project
+    - airflow-project-venv:/opt/airflow/project/.venv
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+x-app-common: &app-common
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  environment:
+    GCP_PROJECT_ID: safaricom-intelligence
+    GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-service-account.json
+    QDRANT_HOST: qdrant
+    QDRANT_PORT: "6333"
+    TRACES_DB_PATH: /data/traces.db
+  volumes:
+    - ~/.gcp/safaricom-intelligence-sa.json:/secrets/gcp-service-account.json:ro
+    - ./embeddings:/app/embeddings:ro
+    - ./models:/app/models
+    - monitoring-data:/data
+  depends_on:
+    qdrant:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - "airflow db migrate && (airflow users create --username admin --password REDACTED --firstname Ryan --lastname Giggs --role Admin --email derrickryangiggs@gmail.com || true)"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    depends_on:
+      postgres:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant-storage:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/6333'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    <<: *app-common
+    ports:
+      - "8601:8501"
+
+  dashboard:
+    <<: *app-common
+    command: ["uv", "run", "streamlit", "run", "monitoring/dashboard.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    ports:
+      - "8602:8501"
+
+volumes:
+  postgres-db-volume:
+  airflow-project-venv:
+  qdrant-storage:
+  monitoring-data:
+
+  

@@ -7,7 +7,6 @@ data/raw/
 data/processed/
 *.db
 models/
-docker-compose.yml
 *.pdf
 *.pyc
 raw/*.pdf
