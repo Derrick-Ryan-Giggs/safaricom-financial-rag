@@ -65,7 +65,7 @@ def build_qdrant_client(records: list[dict]) -> QdrantClient:
     always re-indexed), a persistent server means every app restart would
     otherwise re-upload all ~2,100 embeddings for no reason.
     """
-    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, api_key=QDRANT_API_KEY, https=QDRANT_HTTPS)
+    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, api_key=QDRANT_API_KEY, https=QDRANT_HTTPS, timeout=60)
 
     already_indexed = False
     if client.collection_exists(COLLECTION_NAME):

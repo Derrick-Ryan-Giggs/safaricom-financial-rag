@@ -7,8 +7,6 @@
 .gitignore
 
 # Bind-mounted at runtime (x-app-common volumes), no need to bake into image
-embeddings/
-models/
 
 # Raw source PDFs, not needed by the app/dashboard runtime
 data/raw/
