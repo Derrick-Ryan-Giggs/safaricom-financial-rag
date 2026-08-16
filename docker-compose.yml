@@ -6,6 +6,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    SAFARICOM_RAG_PROJECT_ROOT: /opt/airflow/project
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - .:/opt/airflow/project
@@ -108,5 +109,3 @@ volumes:
   airflow-project-venv:
   qdrant-storage:
   monitoring-data:
-
-  
