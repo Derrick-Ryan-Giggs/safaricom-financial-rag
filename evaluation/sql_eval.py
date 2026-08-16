@@ -82,7 +82,9 @@ def run_evaluation(ground_truth: list[dict], output_path: str) -> None:
             generated_sql = None
             rows = None
             try:
-                rows, generated_sql = run_query(gt["question"], return_sql=True)
+                rows, generated_sql = run_query(
+                    gt["question"], return_sql=True, model="openai/gpt-oss-20b"
+                )  # cheap/fast model for eval runs only -- live app keeps config.LLM_MODEL
                 if not rows:
                     verdict = "EMPTY"
                 elif values_match(gt["expected_value"], rows):

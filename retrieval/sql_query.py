@@ -119,6 +119,7 @@ def generate_sql(
     schema: str,
     previous_attempt: str | None = None,
     previous_error: str | None = None,
+    model: str = config.LLM_MODEL,
 ) -> str:
     client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
@@ -137,7 +138,7 @@ def generate_sql(
         })
 
     response = client.chat.completions.create(
-        model=config.LLM_MODEL,
+        model=model,
         messages=messages,
         temperature=0,
     )
@@ -154,7 +155,7 @@ def is_safe_select(sql: str) -> bool:
     return not any(keyword in normalized for keyword in forbidden)
 
 
-def run_query(question: str, return_sql: bool = False):
+def run_query(question: str, return_sql: bool = False, model: str = config.LLM_MODEL):
     """
     Generate and run SQL for `question`.
 
@@ -173,7 +174,7 @@ def run_query(question: str, return_sql: bool = False):
     """
     client = get_bq_client()
     schema = get_mart_schema(client)
-    sql = generate_sql(question, schema)
+    sql = generate_sql(question, schema, model=model)
 
     job_config = bigquery.QueryJobConfig(
         default_dataset=f"{config.GCP_PROJECT_ID}.{config.BIGQUERY_MART_DATASET}"
@@ -215,7 +216,7 @@ def run_query(question: str, return_sql: bool = False):
             last_error = str(e)
             if attempt < MAX_SQL_RETRIES:
                 print(f"Query failed, retrying with error feedback: {last_error}")
-                sql = generate_sql(question, schema, previous_attempt=sql, previous_error=last_error)
+                sql = generate_sql(question, schema, previous_attempt=sql, previous_error=last_error, model=model)
 
     if return_sql:
         raise SQLGenerationError(last_error, sql)
