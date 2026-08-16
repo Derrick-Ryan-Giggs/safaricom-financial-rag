@@ -17,6 +17,7 @@ Zoomcamp 2026.
 - [Data Quality: What Broke and How It Was Found](#data-quality-what-broke-and-how-it-was-found)
 - [Evaluation](#evaluation)
 - [Known Limitations](#known-limitations)
+- [Screenshots](#screenshots)
 - [Reproducibility: How to Run](#reproducibility-how-to-run)
 
 ## Problem Description
@@ -173,7 +174,7 @@ safaricom-financial-rag/
 │   ├── tracer.py                  # OpenTelemetry + SQLite span exporter
 │   ├── feedback.py                # thumbs up/down capture
 │   ├── conversation_store.py      # persisted chat history
-│   └── dashboard.py               # Streamlit feedback dashboard
+│   └── dashboard.py                # Streamlit feedback dashboard
 ├── ui/
 │   └── app.py                     # Streamlit chat interface
 ├── airflow/
@@ -317,6 +318,45 @@ finalized.
   `safaricom_rag.chunks` for archival/inspection, but retrieval itself
   still reads from local `embeddings/*.jsonl`, not from that table. The
   BigQuery chunks table is not yet in the runtime retrieval path.
+
+## Screenshots
+
+Reference for what a working run looks like end to end, useful if you hit
+a snag reproducing this and want to check what state things should be in.
+
+**Chat app — SQL path and RAG path, side by side.** The SQL router pulls a
+number straight from the BigQuery mart tables (`Total Capital Investment
+Kes Bn: 234.96`, with generated SQL shown on request); the RAG path
+answers from the PDF corpus with a cited source.
+
+![Chat app answering an SQL question and a RAG question](docs/screenshots/chat-sql-and-rag.png)
+
+**RAG path citing fiscal year and page number**, and correctly declining
+to answer from the structured tables when the mart data doesn't cover it,
+falling back to the narrative PDFs instead.
+
+![RAG answer with source citation, falling back to narrative PDFs](docs/screenshots/chat-rag-citation-example.png)
+
+**Router correctly splitting a CEO lookup (RAG) from a numeric lookup
+(SQL)** in the same session.
+
+![Router answering a RAG question and a SQL question back to back](docs/screenshots/chat-sql-ceo-mpesa.png)
+
+**Feedback dashboard** (`monitoring/dashboard.py`), reading from
+`monitoring/traces.db`: total questions, thumbs up/down counts, and
+feedback ratio from real usage.
+
+![Monitoring dashboard totals and feedback ratio](docs/screenshots/monitoring-dashboard-overview.png)
+
+**Router distribution and response latency**, same dashboard, further
+down the page.
+
+![Route distribution across SQL, RAG, OTHER, and unknown, plus response latency](docs/screenshots/monitoring-route-distribution-latency.png)
+
+**Qdrant collection populated after a full ingestion run** — `safaricom_chunks`,
+2,109 points, 384-dim vectors, cosine distance, `GREEN` status.
+
+![Qdrant dashboard showing the populated safaricom_chunks collection](docs/screenshots/qdrant-collection-populated.png)
 
 ## Reproducibility: How to Run
 
