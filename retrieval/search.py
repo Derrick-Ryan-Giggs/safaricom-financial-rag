@@ -49,6 +49,8 @@ import os
 
 QDRANT_HOST = os.environ.get("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.environ.get("QDRANT_PORT", "6333"))
+QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY")
+QDRANT_HTTPS = os.environ.get("QDRANT_HTTPS", "false").lower() == "true"
 
 
 def build_qdrant_client(records: list[dict]) -> QdrantClient:
@@ -63,7 +65,7 @@ def build_qdrant_client(records: list[dict]) -> QdrantClient:
     always re-indexed), a persistent server means every app restart would
     otherwise re-upload all ~2,100 embeddings for no reason.
     """
-    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
+    client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, api_key=QDRANT_API_KEY, https=QDRANT_HTTPS)
 
     already_indexed = False
     if client.collection_exists(COLLECTION_NAME):
