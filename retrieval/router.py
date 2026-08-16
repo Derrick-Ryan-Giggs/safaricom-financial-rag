@@ -59,7 +59,7 @@ def classify_question(question: str) -> str:
             {"role": "user", "content": question},
         ],
         temperature=0,
-        max_tokens=5,   # fine again, this model doesn't burn tokens on hidden reasoning
+        max_tokens=300,   # fine again, this model doesn't burn tokens on hidden reasoning
     )
     label = response.choices[0].message.content.strip().upper()
     return label if label in ("SQL", "RAG", "OTHER") else "RAG"  # default to RAG if the model returns anything unexpected
