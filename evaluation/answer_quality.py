@@ -60,7 +60,7 @@ def call_with_backoff(fn, *args, **kwargs):
 def judge_answer(client: OpenAI, question: str, reference_answer: str, generated_answer: str) -> str:
     response = call_with_backoff(
     client.chat.completions.create,
-    model="config.LLM_MODEL",
+    model=config.LLM_MODEL,
     messages=[{
         "role": "user",
         "content": JUDGE_PROMPT.format(
