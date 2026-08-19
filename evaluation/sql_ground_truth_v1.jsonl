@@ -1,0 +1,565 @@
+{"question": "What was Ke Service Revenue Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_service_revenue_kes_bn", "fiscal_year": "FY22", "expected_value": "281.11"}
+{"question": "What was Et Service Revenue Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "et_service_revenue_kes_bn", "fiscal_year": "FY22", "expected_value": "0"}
+{"question": "What was Ke Ebit Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_kes_bn", "fiscal_year": "FY22", "expected_value": "114.25"}
+{"question": "What was Et Ebit Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "et_ebit_kes_bn", "fiscal_year": "FY22", "expected_value": "-5.12"}
+{"question": "What was Ke Active Customers 1M Mn in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_1m_mn", "fiscal_year": "FY22", "expected_value": "32.81"}
+{"question": "What was Et Active Customers 1M Mn in FY22?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_1m_mn", "fiscal_year": "FY22", "expected_value": "0"}
+{"question": "What was Ke Active Customers 3M Mn in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_3m_mn", "fiscal_year": "FY22", "expected_value": "42.44"}
+{"question": "What was Et Active Customers 3M Mn in FY22?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_3m_mn", "fiscal_year": "FY22", "expected_value": "0"}
+{"question": "What was Ke Capex Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_capex_kes_bn", "fiscal_year": "FY22", "expected_value": "39.4"}
+{"question": "What was Et Capex Kes Bn in FY22?", "table": "mart_ke_et_trajectory", "column": "et_capex_kes_bn", "fiscal_year": "FY22", "expected_value": "10.4"}
+{"question": "What was Ke Ebit Margin Pct in FY22?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_margin_pct", "fiscal_year": "FY22", "expected_value": "40.64"}
+{"question": "What was Ke Service Revenue Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_service_revenue_kes_bn", "fiscal_year": "FY23", "expected_value": "295.18"}
+{"question": "What was Et Service Revenue Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_service_revenue_kes_bn", "fiscal_year": "FY23", "expected_value": "0.56"}
+{"question": "What was Ke Ebit Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_kes_bn", "fiscal_year": "FY23", "expected_value": "116.25"}
+{"question": "What was Et Ebit Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_ebit_kes_bn", "fiscal_year": "FY23", "expected_value": "-30.72"}
+{"question": "What was Ke Active Customers 1M Mn in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_1m_mn", "fiscal_year": "FY23", "expected_value": "33.11"}
+{"question": "What was Et Active Customers 1M Mn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_1m_mn", "fiscal_year": "FY23", "expected_value": "1.44"}
+{"question": "What was Ke Active Customers 3M Mn in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_3m_mn", "fiscal_year": "FY23", "expected_value": "43.75"}
+{"question": "What was Et Active Customers 3M Mn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_3m_mn", "fiscal_year": "FY23", "expected_value": "2.14"}
+{"question": "What was Ke Capex Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_capex_kes_bn", "fiscal_year": "FY23", "expected_value": "40.37"}
+{"question": "What was Et Capex Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_capex_kes_bn", "fiscal_year": "FY23", "expected_value": "55.77"}
+{"question": "What was Ke Ebit Margin Pct in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_margin_pct", "fiscal_year": "FY23", "expected_value": "39.38"}
+{"question": "What was Et Ebit Margin Pct in FY23?", "table": "mart_ke_et_trajectory", "column": "et_ebit_margin_pct", "fiscal_year": "FY23", "expected_value": "-5485.71"}
+{"question": "What was Ke Revenue Yoy Pct in FY23?", "table": "mart_ke_et_trajectory", "column": "ke_revenue_yoy_pct", "fiscal_year": "FY23", "expected_value": "5.01"}
+{"question": "What was Et Ebit Loss Narrowing Kes Bn in FY23?", "table": "mart_ke_et_trajectory", "column": "et_ebit_loss_narrowing_kes_bn", "fiscal_year": "FY23", "expected_value": "-25.6"}
+{"question": "What was Ke Service Revenue Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_service_revenue_kes_bn", "fiscal_year": "FY24", "expected_value": "329.81"}
+{"question": "What was Et Service Revenue Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_service_revenue_kes_bn", "fiscal_year": "FY24", "expected_value": "5.76"}
+{"question": "What was Ke Ebit Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_kes_bn", "fiscal_year": "FY24", "expected_value": "139.93"}
+{"question": "What was Et Ebit Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_ebit_kes_bn", "fiscal_year": "FY24", "expected_value": "-59.6"}
+{"question": "What was Ke Active Customers 1M Mn in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_1m_mn", "fiscal_year": "FY24", "expected_value": "34.64"}
+{"question": "What was Et Active Customers 1M Mn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_1m_mn", "fiscal_year": "FY24", "expected_value": "3.06"}
+{"question": "What was Ke Active Customers 3M Mn in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_3m_mn", "fiscal_year": "FY24", "expected_value": "44.67"}
+{"question": "What was Et Active Customers 3M Mn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_3m_mn", "fiscal_year": "FY24", "expected_value": "4.35"}
+{"question": "What was Ke Capex Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_capex_kes_bn", "fiscal_year": "FY24", "expected_value": "47.29"}
+{"question": "What was Et Capex Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_capex_kes_bn", "fiscal_year": "FY24", "expected_value": "46.25"}
+{"question": "What was Ke Ebit Margin Pct in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_margin_pct", "fiscal_year": "FY24", "expected_value": "42.43"}
+{"question": "What was Et Ebit Margin Pct in FY24?", "table": "mart_ke_et_trajectory", "column": "et_ebit_margin_pct", "fiscal_year": "FY24", "expected_value": "-1034.72"}
+{"question": "What was Ke Revenue Yoy Pct in FY24?", "table": "mart_ke_et_trajectory", "column": "ke_revenue_yoy_pct", "fiscal_year": "FY24", "expected_value": "11.73"}
+{"question": "What was Et Revenue Yoy Pct in FY24?", "table": "mart_ke_et_trajectory", "column": "et_revenue_yoy_pct", "fiscal_year": "FY24", "expected_value": "928.57"}
+{"question": "What was Et Ebit Loss Narrowing Kes Bn in FY24?", "table": "mart_ke_et_trajectory", "column": "et_ebit_loss_narrowing_kes_bn", "fiscal_year": "FY24", "expected_value": "-28.88"}
+{"question": "What was Ke Service Revenue Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_service_revenue_kes_bn", "fiscal_year": "FY25", "expected_value": "364.28"}
+{"question": "What was Et Service Revenue Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_service_revenue_kes_bn", "fiscal_year": "FY25", "expected_value": "7.55"}
+{"question": "What was Ke Ebit Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_kes_bn", "fiscal_year": "FY25", "expected_value": "157.35"}
+{"question": "What was Et Ebit Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_ebit_kes_bn", "fiscal_year": "FY25", "expected_value": "-61.1"}
+{"question": "What was Ke Active Customers 1M Mn in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_1m_mn", "fiscal_year": "FY25", "expected_value": "37.11"}
+{"question": "What was Et Active Customers 1M Mn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_1m_mn", "fiscal_year": "FY25", "expected_value": "7.25"}
+{"question": "What was Ke Active Customers 3M Mn in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_3m_mn", "fiscal_year": "FY25", "expected_value": "48.24"}
+{"question": "What was Et Active Customers 3M Mn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_3m_mn", "fiscal_year": "FY25", "expected_value": "8.84"}
+{"question": "What was Ke Capex Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_capex_kes_bn", "fiscal_year": "FY25", "expected_value": "52.11"}
+{"question": "What was Et Capex Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_capex_kes_bn", "fiscal_year": "FY25", "expected_value": "39.2"}
+{"question": "What was Ke Ebit Margin Pct in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_margin_pct", "fiscal_year": "FY25", "expected_value": "43.19"}
+{"question": "What was Et Ebit Margin Pct in FY25?", "table": "mart_ke_et_trajectory", "column": "et_ebit_margin_pct", "fiscal_year": "FY25", "expected_value": "-809.27"}
+{"question": "What was Ke Revenue Yoy Pct in FY25?", "table": "mart_ke_et_trajectory", "column": "ke_revenue_yoy_pct", "fiscal_year": "FY25", "expected_value": "10.45"}
+{"question": "What was Et Revenue Yoy Pct in FY25?", "table": "mart_ke_et_trajectory", "column": "et_revenue_yoy_pct", "fiscal_year": "FY25", "expected_value": "31.08"}
+{"question": "What was Et Ebit Loss Narrowing Kes Bn in FY25?", "table": "mart_ke_et_trajectory", "column": "et_ebit_loss_narrowing_kes_bn", "fiscal_year": "FY25", "expected_value": "-1.5"}
+{"question": "What was Ke Service Revenue Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_service_revenue_kes_bn", "fiscal_year": "FY26", "expected_value": "400.79"}
+{"question": "What was Et Service Revenue Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_service_revenue_kes_bn", "fiscal_year": "FY26", "expected_value": "14.08"}
+{"question": "What was Ke Ebit Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_kes_bn", "fiscal_year": "FY26", "expected_value": "182.3"}
+{"question": "What was Et Ebit Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_ebit_kes_bn", "fiscal_year": "FY26", "expected_value": "-30.1"}
+{"question": "What was Ke Active Customers 1M Mn in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_1m_mn", "fiscal_year": "FY26", "expected_value": "39.92"}
+{"question": "What was Et Active Customers 1M Mn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_1m_mn", "fiscal_year": "FY26", "expected_value": "10.75"}
+{"question": "What was Ke Active Customers 3M Mn in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_active_customers_3m_mn", "fiscal_year": "FY26", "expected_value": "57.93"}
+{"question": "What was Et Active Customers 3M Mn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_active_customers_3m_mn", "fiscal_year": "FY26", "expected_value": "13.63"}
+{"question": "What was Ke Capex Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_capex_kes_bn", "fiscal_year": "FY26", "expected_value": "55.79"}
+{"question": "What was Et Capex Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_capex_kes_bn", "fiscal_year": "FY26", "expected_value": "18.7"}
+{"question": "What was Ke Ebit Margin Pct in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_ebit_margin_pct", "fiscal_year": "FY26", "expected_value": "45.49"}
+{"question": "What was Et Ebit Margin Pct in FY26?", "table": "mart_ke_et_trajectory", "column": "et_ebit_margin_pct", "fiscal_year": "FY26", "expected_value": "-213.78"}
+{"question": "What was Ke Revenue Yoy Pct in FY26?", "table": "mart_ke_et_trajectory", "column": "ke_revenue_yoy_pct", "fiscal_year": "FY26", "expected_value": "10.02"}
+{"question": "What was Et Revenue Yoy Pct in FY26?", "table": "mart_ke_et_trajectory", "column": "et_revenue_yoy_pct", "fiscal_year": "FY26", "expected_value": "86.49"}
+{"question": "What was Et Ebit Loss Narrowing Kes Bn in FY26?", "table": "mart_ke_et_trajectory", "column": "et_ebit_loss_narrowing_kes_bn", "fiscal_year": "FY26", "expected_value": "31"}
+{"question": "What was Mpesa Revenue Kes Bn in FY08?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY08", "expected_value": "0.37"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY08?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY08", "expected_value": "14.8"}
+{"question": "What was Mpesa Customers 1M Mn in FY08?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY08", "expected_value": "2.075"}
+{"question": "What was Mpesa Pct Of Total in FY08?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY08", "expected_value": "0.63"}
+{"question": "What was Total Service Revenue Kes Bn in FY08?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY08", "expected_value": "58.81"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY08?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY08", "expected_value": "0.37"}
+{"question": "What was Mpesa Revenue Kes Bn in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY09", "expected_value": "2.93"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY09", "expected_value": "120.61"}
+{"question": "What was Mpesa Customers 1M Mn in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY09", "expected_value": "6.175"}
+{"question": "What was Mpesa Pct Of Total in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY09", "expected_value": "4.32"}
+{"question": "What was Total Service Revenue Kes Bn in FY09?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY09", "expected_value": "67.89"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY09", "expected_value": "691.89"}
+{"question": "What was Mpesa Customers Yoy Pct in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY09", "expected_value": "197.59"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY09?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY09", "expected_value": "1.65"}
+{"question": "What was Mpesa Revenue Kes Bn in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY10", "expected_value": "7.56"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY10", "expected_value": "270.11"}
+{"question": "What was Mpesa Customers 1M Mn in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY10", "expected_value": "9.48"}
+{"question": "What was Mpesa Pct Of Total in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY10", "expected_value": "9.5"}
+{"question": "What was Total Service Revenue Kes Bn in FY10?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY10", "expected_value": "79.57"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY10", "expected_value": "158.02"}
+{"question": "What was Mpesa Customers Yoy Pct in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY10", "expected_value": "53.52"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY10?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY10", "expected_value": "3.62"}
+{"question": "What was Mpesa Revenue Kes Bn in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY11", "expected_value": "11.78"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY11", "expected_value": "423"}
+{"question": "What was Mpesa Customers 1M Mn in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY11", "expected_value": "13.8"}
+{"question": "What was Mpesa Pct Of Total in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY11", "expected_value": "13.36"}
+{"question": "What was Total Service Revenue Kes Bn in FY11?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY11", "expected_value": "88.2"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY11", "expected_value": "55.82"}
+{"question": "What was Mpesa Customers Yoy Pct in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY11", "expected_value": "45.57"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY11?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY11", "expected_value": "7.42"}
+{"question": "What was Mpesa Revenue Kes Bn in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY12", "expected_value": "16.87"}
+{"question": "What was Mpesa Customers 1M Mn in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY12", "expected_value": "14.9"}
+{"question": "What was Mpesa Pct Of Total in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY12", "expected_value": "16.84"}
+{"question": "What was Total Service Revenue Kes Bn in FY12?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY12", "expected_value": "100.19"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY12", "expected_value": "43.21"}
+{"question": "What was Mpesa Customers Yoy Pct in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY12", "expected_value": "7.97"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY12?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY12", "expected_value": "12.07"}
+{"question": "What was Mpesa Revenue Kes Bn in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY13", "expected_value": "21.84"}
+{"question": "What was Mpesa Customers 1M Mn in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY13", "expected_value": "10.5"}
+{"question": "What was Mpesa Pct Of Total in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY13", "expected_value": "18.5"}
+{"question": "What was Total Service Revenue Kes Bn in FY13?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY13", "expected_value": "118.05"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY13", "expected_value": "29.46"}
+{"question": "What was Mpesa Customers Yoy Pct in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY13", "expected_value": "-29.53"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY13?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY13", "expected_value": "16.83"}
+{"question": "What was Mpesa Revenue Kes Bn in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY14", "expected_value": "26.56"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY14", "expected_value": "1215.6"}
+{"question": "What was Mpesa Customers 1M Mn in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY14", "expected_value": "12.2"}
+{"question": "What was Merchants Mn in FY14?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY14", "expected_value": "0.024"}
+{"question": "What was Mpesa Pct Of Total in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY14", "expected_value": "19.2"}
+{"question": "What was Total Service Revenue Kes Bn in FY14?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY14", "expected_value": "138.36"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY14", "expected_value": "21.61"}
+{"question": "What was Mpesa Customers Yoy Pct in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY14", "expected_value": "16.19"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY14?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY14", "expected_value": "21.76"}
+{"question": "What was Mpesa Revenue Kes Bn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY15", "expected_value": "32.63"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY15", "expected_value": "41680"}
+{"question": "What was Mpesa Txn Volume Mn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY15", "expected_value": "46410"}
+{"question": "What was Avg Txn Value Kes in FY15?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY15", "expected_value": "898.08"}
+{"question": "What was Mpesa Customers 1M Mn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY15", "expected_value": "13.86"}
+{"question": "What was Merchants Mn in FY15?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY15", "expected_value": "0.05"}
+{"question": "What was Mpesa Global Kes Bn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY15", "expected_value": "4.5"}
+{"question": "What was Mpesa Pct Of Total in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY15", "expected_value": "20.88"}
+{"question": "What was Total Service Revenue Kes Bn in FY15?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY15", "expected_value": "156.25"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY15", "expected_value": "22.85"}
+{"question": "What was Mpesa Customers Yoy Pct in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY15", "expected_value": "13.61"}
+{"question": "What was Merchants Yoy Pct in FY15?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY15", "expected_value": "108.33"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY15?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY15", "expected_value": "27.01"}
+{"question": "What was Mpesa Revenue Kes Bn in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY16", "expected_value": "41.5"}
+{"question": "What was Mpesa Customers 1M Mn in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY16", "expected_value": "16.6"}
+{"question": "What was Mpesa Pct Of Total in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY16", "expected_value": "22.44"}
+{"question": "What was Total Service Revenue Kes Bn in FY16?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY16", "expected_value": "184.92"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY16", "expected_value": "27.18"}
+{"question": "What was Mpesa Customers Yoy Pct in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY16", "expected_value": "19.77"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY16?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY16", "expected_value": "33.56"}
+{"question": "What was Mpesa Revenue Kes Bn in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY17", "expected_value": "55.08"}
+{"question": "What was Mpesa Customers 1M Mn in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY17", "expected_value": "19.02"}
+{"question": "What was Merchants Mn in FY17?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY17", "expected_value": "0.05"}
+{"question": "What was Mpesa Pct Of Total in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY17", "expected_value": "26.14"}
+{"question": "What was Total Service Revenue Kes Bn in FY17?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY17", "expected_value": "210.73"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY17", "expected_value": "32.72"}
+{"question": "What was Mpesa Customers Yoy Pct in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY17", "expected_value": "14.58"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY17?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY17", "expected_value": "43.07"}
+{"question": "What was Mpesa Revenue Kes Bn in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY18", "expected_value": "62.91"}
+{"question": "What was Mpesa Customers 1M Mn in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY18", "expected_value": "20.55"}
+{"question": "What was Merchants Mn in FY18?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY18", "expected_value": "0.101"}
+{"question": "What was Mpesa Pct Of Total in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY18", "expected_value": "27.21"}
+{"question": "What was Total Service Revenue Kes Bn in FY18?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY18", "expected_value": "231.22"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY18", "expected_value": "14.22"}
+{"question": "What was Mpesa Customers Yoy Pct in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY18", "expected_value": "8.04"}
+{"question": "What was Merchants Yoy Pct in FY18?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY18", "expected_value": "102"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY18?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY18", "expected_value": "53.16"}
+{"question": "What was Mpesa Revenue Kes Bn in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY19", "expected_value": "74.99"}
+{"question": "What was Mpesa Customers 1M Mn in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY19", "expected_value": "22.64"}
+{"question": "What was Mpesa Pct Of Total in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY19", "expected_value": "31.28"}
+{"question": "What was Total Service Revenue Kes Bn in FY19?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY19", "expected_value": "239.77"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY19", "expected_value": "19.2"}
+{"question": "What was Mpesa Customers Yoy Pct in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY19", "expected_value": "10.17"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY19?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY19", "expected_value": "64.33"}
+{"question": "What was Mpesa Revenue Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY20", "expected_value": "84.44"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY20", "expected_value": "13936"}
+{"question": "What was Mpesa Txn Volume Mn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY20", "expected_value": "8998"}
+{"question": "What was Avg Txn Value Kes in FY20?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY20", "expected_value": "1548.79"}
+{"question": "What was Mpesa Customers 1M Mn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY20", "expected_value": "24.91"}
+{"question": "What was Merchants Mn in FY20?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY20", "expected_value": "0.173"}
+{"question": "What was Business Payments Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY20", "expected_value": "3136.7"}
+{"question": "What was Mpesa Global Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY20", "expected_value": "1.31"}
+{"question": "What was Mpesa Pct Of Total in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY20", "expected_value": "33.61"}
+{"question": "What was Total Service Revenue Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY20", "expected_value": "251.22"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY20", "expected_value": "12.6"}
+{"question": "What was Mpesa Customers Yoy Pct in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY20", "expected_value": "10.03"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY20?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY20", "expected_value": "74.11"}
+{"question": "What was Mpesa Revenue Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY21", "expected_value": "82.65"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY21", "expected_value": "22044"}
+{"question": "What was Mpesa Txn Volume Mn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY21", "expected_value": "11676"}
+{"question": "What was Avg Txn Value Kes in FY21?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY21", "expected_value": "1887.98"}
+{"question": "What was Mpesa Customers 1M Mn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY21", "expected_value": "28.31"}
+{"question": "What was Merchants Mn in FY21?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY21", "expected_value": "0.302"}
+{"question": "What was Business Payments Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY21", "expected_value": "6394.5"}
+{"question": "What was Mpesa Global Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY21", "expected_value": "2.01"}
+{"question": "What was Mpesa Pct Of Total in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY21", "expected_value": "33.01"}
+{"question": "What was Total Service Revenue Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY21", "expected_value": "250.35"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY21", "expected_value": "-2.12"}
+{"question": "What was Mpesa Customers Yoy Pct in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY21", "expected_value": "13.65"}
+{"question": "What was Merchants Yoy Pct in FY21?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY21", "expected_value": "74.57"}
+{"question": "What was Business Payments Yoy Pct in FY21?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY21", "expected_value": "103.86"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY21?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY21", "expected_value": "80.69"}
+{"question": "What was Mpesa Revenue Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY22", "expected_value": "107.69"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY22", "expected_value": "30180.9"}
+{"question": "What was Mpesa Txn Volume Mn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY22", "expected_value": "15752.8"}
+{"question": "What was Avg Txn Value Kes in FY22?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY22", "expected_value": "1915.91"}
+{"question": "What was Mpesa Customers 1M Mn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY22", "expected_value": "30.53"}
+{"question": "What was Merchants Mn in FY22?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY22", "expected_value": "0.493"}
+{"question": "What was Business Payments Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY22", "expected_value": "24.25"}
+{"question": "What was Mpesa Global Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY22", "expected_value": "2.48"}
+{"question": "What was Mpesa Pct Of Total in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY22", "expected_value": "38.31"}
+{"question": "What was Total Service Revenue Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY22", "expected_value": "281.11"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY22", "expected_value": "30.3"}
+{"question": "What was Mpesa Customers Yoy Pct in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY22", "expected_value": "7.84"}
+{"question": "What was Merchants Yoy Pct in FY22?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY22", "expected_value": "63.25"}
+{"question": "What was Business Payments Yoy Pct in FY22?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY22", "expected_value": "-99.62"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY22?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY22", "expected_value": "91.59"}
+{"question": "What was Mpesa Revenue Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY23", "expected_value": "117.19"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY23", "expected_value": "34859.1"}
+{"question": "What was Mpesa Txn Volume Mn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY23", "expected_value": "21476"}
+{"question": "What was Avg Txn Value Kes in FY23?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY23", "expected_value": "1623.17"}
+{"question": "What was Mpesa Customers 1M Mn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY23", "expected_value": "32.11"}
+{"question": "What was Merchants Mn in FY23?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY23", "expected_value": "0.607"}
+{"question": "What was Business Payments Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY23", "expected_value": "27.34"}
+{"question": "What was Mpesa Global Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY23", "expected_value": "2.9"}
+{"question": "What was Mpesa Pct Of Total in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY23", "expected_value": "39.7"}
+{"question": "What was Total Service Revenue Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY23", "expected_value": "295.18"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY23", "expected_value": "8.82"}
+{"question": "What was Mpesa Customers Yoy Pct in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY23", "expected_value": "5.18"}
+{"question": "What was Merchants Yoy Pct in FY23?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY23", "expected_value": "23.12"}
+{"question": "What was Business Payments Yoy Pct in FY23?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY23", "expected_value": "12.74"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY23?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY23", "expected_value": "102.51"}
+{"question": "What was Mpesa Revenue Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY24", "expected_value": "139.91"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY24", "expected_value": "37701.7"}
+{"question": "What was Mpesa Txn Volume Mn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY24", "expected_value": "28679.2"}
+{"question": "What was Avg Txn Value Kes in FY24?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY24", "expected_value": "1314.6"}
+{"question": "What was Mpesa Customers 1M Mn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY24", "expected_value": "32.41"}
+{"question": "What was Merchants Mn in FY24?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY24", "expected_value": "0.633"}
+{"question": "What was Business Payments Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY24", "expected_value": "38.18"}
+{"question": "What was Mpesa Global Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY24", "expected_value": "3.47"}
+{"question": "What was Merchant Overdraft Customers in FY24?", "table": "mart_mpesa_growth_trends", "column": "merchant_overdraft_customers", "fiscal_year": "FY24", "expected_value": "44797"}
+{"question": "What was Mpesa Pct Of Total in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY24", "expected_value": "42.42"}
+{"question": "What was Total Service Revenue Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY24", "expected_value": "329.81"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY24", "expected_value": "19.39"}
+{"question": "What was Mpesa Customers Yoy Pct in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY24", "expected_value": "0.93"}
+{"question": "What was Merchants Yoy Pct in FY24?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY24", "expected_value": "4.28"}
+{"question": "What was Business Payments Yoy Pct in FY24?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY24", "expected_value": "39.65"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY24?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY24", "expected_value": "121.6"}
+{"question": "What was Mpesa Revenue Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY25", "expected_value": "161.12"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY25", "expected_value": "38267.9"}
+{"question": "What was Mpesa Txn Volume Mn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY25", "expected_value": "37100.9"}
+{"question": "What was Avg Txn Value Kes in FY25?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY25", "expected_value": "1031.45"}
+{"question": "What was Mpesa Customers 1M Mn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY25", "expected_value": "35.82"}
+{"question": "What was Merchants Mn in FY25?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY25", "expected_value": "1.83"}
+{"question": "What was Business Payments Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY25", "expected_value": "48.64"}
+{"question": "What was Mpesa Global Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY25", "expected_value": "3.89"}
+{"question": "What was Merchant Overdraft Customers in FY25?", "table": "mart_mpesa_growth_trends", "column": "merchant_overdraft_customers", "fiscal_year": "FY25", "expected_value": "45150"}
+{"question": "What was Mpesa Pct Of Total in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY25", "expected_value": "44.23"}
+{"question": "What was Total Service Revenue Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY25", "expected_value": "364.28"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY25", "expected_value": "15.16"}
+{"question": "What was Mpesa Customers Yoy Pct in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY25", "expected_value": "10.52"}
+{"question": "What was Merchants Yoy Pct in FY25?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY25", "expected_value": "189.1"}
+{"question": "What was Business Payments Yoy Pct in FY25?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY25", "expected_value": "27.4"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY25?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY25", "expected_value": "139.41"}
+{"question": "What was Mpesa Revenue Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_kes_bn", "fiscal_year": "FY26", "expected_value": "182.73"}
+{"question": "What was Mpesa Txn Value Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_value_kes_bn", "fiscal_year": "FY26", "expected_value": "41680.8"}
+{"question": "What was Mpesa Txn Volume Mn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_txn_volume_mn", "fiscal_year": "FY26", "expected_value": "46413.3"}
+{"question": "What was Avg Txn Value Kes in FY26?", "table": "mart_mpesa_growth_trends", "column": "avg_txn_value_kes", "fiscal_year": "FY26", "expected_value": "898.04"}
+{"question": "What was Mpesa Customers 1M Mn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_1m_mn", "fiscal_year": "FY26", "expected_value": "40.99"}
+{"question": "What was Merchants Mn in FY26?", "table": "mart_mpesa_growth_trends", "column": "merchants_mn", "fiscal_year": "FY26", "expected_value": "3.13"}
+{"question": "What was Business Payments Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "business_payments_kes_bn", "fiscal_year": "FY26", "expected_value": "56.67"}
+{"question": "What was Mpesa Global Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_global_kes_bn", "fiscal_year": "FY26", "expected_value": "4.76"}
+{"question": "What was Merchant Overdraft Customers in FY26?", "table": "mart_mpesa_growth_trends", "column": "merchant_overdraft_customers", "fiscal_year": "FY26", "expected_value": "41033"}
+{"question": "What was Mpesa Pct Of Total in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_pct_of_total", "fiscal_year": "FY26", "expected_value": "45.59"}
+{"question": "What was Total Service Revenue Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY26", "expected_value": "400.79"}
+{"question": "What was Mpesa Revenue Yoy Pct in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_yoy_pct", "fiscal_year": "FY26", "expected_value": "13.41"}
+{"question": "What was Mpesa Customers Yoy Pct in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_customers_yoy_pct", "fiscal_year": "FY26", "expected_value": "14.43"}
+{"question": "What was Merchants Yoy Pct in FY26?", "table": "mart_mpesa_growth_trends", "column": "merchants_yoy_pct", "fiscal_year": "FY26", "expected_value": "71.04"}
+{"question": "What was Business Payments Yoy Pct in FY26?", "table": "mart_mpesa_growth_trends", "column": "business_payments_yoy_pct", "fiscal_year": "FY26", "expected_value": "16.51"}
+{"question": "What was Mpesa Revenue 3Yr Rolling Avg Kes Bn in FY26?", "table": "mart_mpesa_growth_trends", "column": "mpesa_revenue_3yr_rolling_avg_kes_bn", "fiscal_year": "FY26", "expected_value": "161.25"}
+{"question": "What was Voice Kes Bn in FY08?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY08", "expected_value": "54.2"}
+{"question": "What was Other Mobile Service Kes Bn in FY08?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY08", "expected_value": "0.744"}
+{"question": "What was Mpesa Kes Bn in FY08?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY08", "expected_value": "0.37"}
+{"question": "What was Total Service Revenue Kes Bn in FY08?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY08", "expected_value": "58.81"}
+{"question": "What was Voice Share Pct in FY08?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY08", "expected_value": "92.16"}
+{"question": "What was Mpesa Share Pct in FY08?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY08", "expected_value": "0.63"}
+{"question": "What was Voice Kes Bn in FY09?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY09", "expected_value": "58.8"}
+{"question": "What was Other Mobile Service Kes Bn in FY09?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY09", "expected_value": "0.279"}
+{"question": "What was Mpesa Kes Bn in FY09?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY09", "expected_value": "2.93"}
+{"question": "What was Total Service Revenue Kes Bn in FY09?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY09", "expected_value": "67.89"}
+{"question": "What was Voice Share Pct in FY09?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY09", "expected_value": "86.61"}
+{"question": "What was Mpesa Share Pct in FY09?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY09", "expected_value": "4.32"}
+{"question": "What was Voice Yoy Pct in FY09?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY09", "expected_value": "8.49"}
+{"question": "What was Mpesa Yoy Pct in FY09?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY09", "expected_value": "691.89"}
+{"question": "What was Voice Kes Bn in FY10?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY10", "expected_value": "63.41"}
+{"question": "What was Other Mobile Service Kes Bn in FY10?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY10", "expected_value": "1.17"}
+{"question": "What was Mpesa Kes Bn in FY10?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY10", "expected_value": "7.56"}
+{"question": "What was Total Service Revenue Kes Bn in FY10?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY10", "expected_value": "79.57"}
+{"question": "What was Voice Share Pct in FY10?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY10", "expected_value": "79.69"}
+{"question": "What was Mpesa Share Pct in FY10?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY10", "expected_value": "9.5"}
+{"question": "What was Voice Yoy Pct in FY10?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY10", "expected_value": "7.84"}
+{"question": "What was Mpesa Yoy Pct in FY10?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY10", "expected_value": "158.02"}
+{"question": "What was Voice Kes Bn in FY11?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY11", "expected_value": "63.5"}
+{"question": "What was Mpesa Kes Bn in FY11?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY11", "expected_value": "11.78"}
+{"question": "What was Total Service Revenue Kes Bn in FY11?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY11", "expected_value": "88.2"}
+{"question": "What was Voice Share Pct in FY11?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY11", "expected_value": "72"}
+{"question": "What was Mpesa Share Pct in FY11?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY11", "expected_value": "13.36"}
+{"question": "What was Voice Yoy Pct in FY11?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY11", "expected_value": "0.14"}
+{"question": "What was Mpesa Yoy Pct in FY11?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY11", "expected_value": "55.82"}
+{"question": "What was Voice Kes Bn in FY12?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY12", "expected_value": "68.96"}
+{"question": "What was Mpesa Kes Bn in FY12?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY12", "expected_value": "16.87"}
+{"question": "What was Total Service Revenue Kes Bn in FY12?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY12", "expected_value": "100.19"}
+{"question": "What was Voice Share Pct in FY12?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY12", "expected_value": "68.83"}
+{"question": "What was Mpesa Share Pct in FY12?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY12", "expected_value": "16.84"}
+{"question": "What was Voice Yoy Pct in FY12?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY12", "expected_value": "8.6"}
+{"question": "What was Mpesa Yoy Pct in FY12?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY12", "expected_value": "43.21"}
+{"question": "What was Voice Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY13", "expected_value": "77.66"}
+{"question": "What was Mobile Data Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY13", "expected_value": "6.31"}
+{"question": "What was Messaging Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY13", "expected_value": "10.13"}
+{"question": "What was Mpesa Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY13", "expected_value": "21.84"}
+{"question": "What was Fixed Service Iot Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY13", "expected_value": "2.11"}
+{"question": "What was Total Service Revenue Kes Bn in FY13?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY13", "expected_value": "118.05"}
+{"question": "What was Voice Share Pct in FY13?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY13", "expected_value": "65.79"}
+{"question": "What was Data Share Pct in FY13?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY13", "expected_value": "5.35"}
+{"question": "What was Messaging Share Pct in FY13?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY13", "expected_value": "8.58"}
+{"question": "What was Mpesa Share Pct in FY13?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY13", "expected_value": "18.5"}
+{"question": "What was Fixed Iot Share Pct in FY13?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY13", "expected_value": "1.79"}
+{"question": "What was Voice Yoy Pct in FY13?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY13", "expected_value": "12.62"}
+{"question": "What was Mpesa Yoy Pct in FY13?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY13", "expected_value": "29.46"}
+{"question": "What was Voice Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY14", "expected_value": "86.3"}
+{"question": "What was Mobile Data Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY14", "expected_value": "9.31"}
+{"question": "What was Messaging Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY14", "expected_value": "13.62"}
+{"question": "What was Mpesa Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY14", "expected_value": "26.56"}
+{"question": "What was Fixed Service Iot Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY14", "expected_value": "2.57"}
+{"question": "What was Total Service Revenue Kes Bn in FY14?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY14", "expected_value": "138.36"}
+{"question": "What was Voice Share Pct in FY14?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY14", "expected_value": "62.37"}
+{"question": "What was Data Share Pct in FY14?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY14", "expected_value": "6.73"}
+{"question": "What was Messaging Share Pct in FY14?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY14", "expected_value": "9.84"}
+{"question": "What was Mpesa Share Pct in FY14?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY14", "expected_value": "19.2"}
+{"question": "What was Fixed Iot Share Pct in FY14?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY14", "expected_value": "1.86"}
+{"question": "What was Voice Yoy Pct in FY14?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY14", "expected_value": "11.13"}
+{"question": "What was Data Yoy Pct in FY14?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY14", "expected_value": "47.54"}
+{"question": "What was Messaging Yoy Pct in FY14?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY14", "expected_value": "34.45"}
+{"question": "What was Mpesa Yoy Pct in FY14?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY14", "expected_value": "21.61"}
+{"question": "What was Fixed Iot Yoy Pct in FY14?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY14", "expected_value": "21.8"}
+{"question": "What was Voice Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY15", "expected_value": "87.41"}
+{"question": "What was Mobile Data Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY15", "expected_value": "14.82"}
+{"question": "What was Messaging Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY15", "expected_value": "15.63"}
+{"question": "What was Mobile Incoming Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY15", "expected_value": "9.07"}
+{"question": "What was Other Mobile Service Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY15", "expected_value": "2.63"}
+{"question": "What was Mpesa Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY15", "expected_value": "32.63"}
+{"question": "What was Fixed Service Iot Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY15", "expected_value": "3.13"}
+{"question": "What was Connectivity Total Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY15", "expected_value": "120.49"}
+{"question": "What was Total Service Revenue Kes Bn in FY15?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY15", "expected_value": "156.25"}
+{"question": "What was Voice Share Pct in FY15?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY15", "expected_value": "55.94"}
+{"question": "What was Data Share Pct in FY15?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY15", "expected_value": "9.48"}
+{"question": "What was Messaging Share Pct in FY15?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY15", "expected_value": "10"}
+{"question": "What was Mpesa Share Pct in FY15?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY15", "expected_value": "20.88"}
+{"question": "What was Fixed Iot Share Pct in FY15?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY15", "expected_value": "2"}
+{"question": "What was Voice Yoy Pct in FY15?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY15", "expected_value": "1.29"}
+{"question": "What was Data Yoy Pct in FY15?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY15", "expected_value": "59.18"}
+{"question": "What was Messaging Yoy Pct in FY15?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY15", "expected_value": "14.76"}
+{"question": "What was Mpesa Yoy Pct in FY15?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY15", "expected_value": "22.85"}
+{"question": "What was Fixed Iot Yoy Pct in FY15?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY15", "expected_value": "21.79"}
+{"question": "What was Voice Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY16", "expected_value": "90.8"}
+{"question": "What was Mobile Data Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY16", "expected_value": "21.15"}
+{"question": "What was Messaging Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY16", "expected_value": "17.33"}
+{"question": "What was Mobile Incoming Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY16", "expected_value": "7.14"}
+{"question": "What was Other Mobile Service Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY16", "expected_value": "3.18"}
+{"question": "What was Mpesa Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY16", "expected_value": "41.5"}
+{"question": "What was Fixed Service Iot Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY16", "expected_value": "3.82"}
+{"question": "What was Connectivity Total Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY16", "expected_value": "139.6"}
+{"question": "What was Total Service Revenue Kes Bn in FY16?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY16", "expected_value": "184.92"}
+{"question": "What was Voice Share Pct in FY16?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY16", "expected_value": "49.1"}
+{"question": "What was Data Share Pct in FY16?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY16", "expected_value": "11.44"}
+{"question": "What was Messaging Share Pct in FY16?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY16", "expected_value": "9.37"}
+{"question": "What was Mpesa Share Pct in FY16?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY16", "expected_value": "22.44"}
+{"question": "What was Fixed Iot Share Pct in FY16?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY16", "expected_value": "2.07"}
+{"question": "What was Voice Yoy Pct in FY16?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY16", "expected_value": "3.88"}
+{"question": "What was Data Yoy Pct in FY16?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY16", "expected_value": "42.71"}
+{"question": "What was Messaging Yoy Pct in FY16?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY16", "expected_value": "10.88"}
+{"question": "What was Mpesa Yoy Pct in FY16?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY16", "expected_value": "27.18"}
+{"question": "What was Fixed Iot Yoy Pct in FY16?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY16", "expected_value": "22.04"}
+{"question": "What was Voice Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY17", "expected_value": "93.46"}
+{"question": "What was Mobile Data Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY17", "expected_value": "29.29"}
+{"question": "What was Messaging Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY17", "expected_value": "16.68"}
+{"question": "What was Mobile Incoming Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY17", "expected_value": "6.62"}
+{"question": "What was Other Mobile Service Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY17", "expected_value": "4.36"}
+{"question": "What was Mpesa Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY17", "expected_value": "55.08"}
+{"question": "What was Fixed Service Iot Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY17", "expected_value": "5.24"}
+{"question": "What was Connectivity Total Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY17", "expected_value": "150.41"}
+{"question": "What was Total Service Revenue Kes Bn in FY17?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY17", "expected_value": "210.73"}
+{"question": "What was Voice Share Pct in FY17?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY17", "expected_value": "44.35"}
+{"question": "What was Data Share Pct in FY17?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY17", "expected_value": "13.9"}
+{"question": "What was Messaging Share Pct in FY17?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY17", "expected_value": "7.92"}
+{"question": "What was Mpesa Share Pct in FY17?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY17", "expected_value": "26.14"}
+{"question": "What was Fixed Iot Share Pct in FY17?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY17", "expected_value": "2.49"}
+{"question": "What was Voice Yoy Pct in FY17?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY17", "expected_value": "2.93"}
+{"question": "What was Data Yoy Pct in FY17?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY17", "expected_value": "38.49"}
+{"question": "What was Messaging Yoy Pct in FY17?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY17", "expected_value": "-3.75"}
+{"question": "What was Mpesa Yoy Pct in FY17?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY17", "expected_value": "32.72"}
+{"question": "What was Fixed Iot Yoy Pct in FY17?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY17", "expected_value": "37.17"}
+{"question": "What was Voice Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY18", "expected_value": "95.64"}
+{"question": "What was Mobile Data Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY18", "expected_value": "36.36"}
+{"question": "What was Messaging Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY18", "expected_value": "17.72"}
+{"question": "What was Mobile Incoming Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY18", "expected_value": "6.68"}
+{"question": "What was Other Mobile Service Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY18", "expected_value": "5.24"}
+{"question": "What was Mpesa Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY18", "expected_value": "62.91"}
+{"question": "What was Fixed Service Iot Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY18", "expected_value": "6.67"}
+{"question": "What was Connectivity Total Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY18", "expected_value": "161.64"}
+{"question": "What was Total Service Revenue Kes Bn in FY18?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY18", "expected_value": "231.22"}
+{"question": "What was Voice Share Pct in FY18?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY18", "expected_value": "41.36"}
+{"question": "What was Data Share Pct in FY18?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY18", "expected_value": "15.73"}
+{"question": "What was Messaging Share Pct in FY18?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY18", "expected_value": "7.66"}
+{"question": "What was Mpesa Share Pct in FY18?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY18", "expected_value": "27.21"}
+{"question": "What was Fixed Iot Share Pct in FY18?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY18", "expected_value": "2.88"}
+{"question": "What was Voice Yoy Pct in FY18?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY18", "expected_value": "2.33"}
+{"question": "What was Data Yoy Pct in FY18?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY18", "expected_value": "24.14"}
+{"question": "What was Messaging Yoy Pct in FY18?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY18", "expected_value": "6.24"}
+{"question": "What was Mpesa Yoy Pct in FY18?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY18", "expected_value": "14.22"}
+{"question": "What was Fixed Iot Yoy Pct in FY18?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY18", "expected_value": "27.29"}
+{"question": "What was Voice Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY19", "expected_value": "95.8"}
+{"question": "What was Mobile Data Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY19", "expected_value": "36.27"}
+{"question": "What was Messaging Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY19", "expected_value": "19.61"}
+{"question": "What was Other Mobile Service Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY19", "expected_value": "5"}
+{"question": "What was Mpesa Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY19", "expected_value": "74.99"}
+{"question": "What was Fixed Service Iot Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY19", "expected_value": "8.1"}
+{"question": "What was Connectivity Total Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY19", "expected_value": "156.68"}
+{"question": "What was Total Service Revenue Kes Bn in FY19?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY19", "expected_value": "239.77"}
+{"question": "What was Voice Share Pct in FY19?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY19", "expected_value": "39.95"}
+{"question": "What was Data Share Pct in FY19?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY19", "expected_value": "15.13"}
+{"question": "What was Messaging Share Pct in FY19?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY19", "expected_value": "8.18"}
+{"question": "What was Mpesa Share Pct in FY19?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY19", "expected_value": "31.28"}
+{"question": "What was Fixed Iot Share Pct in FY19?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY19", "expected_value": "3.38"}
+{"question": "What was Voice Yoy Pct in FY19?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY19", "expected_value": "0.17"}
+{"question": "What was Data Yoy Pct in FY19?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY19", "expected_value": "-0.25"}
+{"question": "What was Messaging Yoy Pct in FY19?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY19", "expected_value": "10.67"}
+{"question": "What was Mpesa Yoy Pct in FY19?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY19", "expected_value": "19.2"}
+{"question": "What was Fixed Iot Yoy Pct in FY19?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY19", "expected_value": "21.44"}
+{"question": "What was Voice Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY20", "expected_value": "86.53"}
+{"question": "What was Mobile Data Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY20", "expected_value": "40.16"}
+{"question": "What was Messaging Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY20", "expected_value": "15.4"}
+{"question": "What was Mobile Incoming Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY20", "expected_value": "8.48"}
+{"question": "What was Other Mobile Service Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY20", "expected_value": "7.24"}
+{"question": "What was Mpesa Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY20", "expected_value": "84.44"}
+{"question": "What was Fixed Service Iot Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY20", "expected_value": "8.97"}
+{"question": "What was Connectivity Total Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY20", "expected_value": "157.81"}
+{"question": "What was Total Service Revenue Kes Bn in FY20?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY20", "expected_value": "251.22"}
+{"question": "What was Voice Share Pct in FY20?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY20", "expected_value": "34.44"}
+{"question": "What was Data Share Pct in FY20?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY20", "expected_value": "15.99"}
+{"question": "What was Messaging Share Pct in FY20?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY20", "expected_value": "6.13"}
+{"question": "What was Mpesa Share Pct in FY20?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY20", "expected_value": "33.61"}
+{"question": "What was Fixed Iot Share Pct in FY20?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY20", "expected_value": "3.57"}
+{"question": "What was Voice Yoy Pct in FY20?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY20", "expected_value": "-9.68"}
+{"question": "What was Data Yoy Pct in FY20?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY20", "expected_value": "10.73"}
+{"question": "What was Messaging Yoy Pct in FY20?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY20", "expected_value": "-21.47"}
+{"question": "What was Mpesa Yoy Pct in FY20?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY20", "expected_value": "12.6"}
+{"question": "What was Fixed Iot Yoy Pct in FY20?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY20", "expected_value": "10.74"}
+{"question": "What was Voice Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY21", "expected_value": "82.55"}
+{"question": "What was Mobile Data Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY21", "expected_value": "44.79"}
+{"question": "What was Messaging Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY21", "expected_value": "13.6"}
+{"question": "What was Mobile Incoming Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY21", "expected_value": "9.47"}
+{"question": "What was Other Mobile Service Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY21", "expected_value": "7.78"}
+{"question": "What was Mpesa Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY21", "expected_value": "82.65"}
+{"question": "What was Fixed Service Iot Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY21", "expected_value": "9.51"}
+{"question": "What was Connectivity Total Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY21", "expected_value": "158.19"}
+{"question": "What was Total Service Revenue Kes Bn in FY21?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY21", "expected_value": "250.35"}
+{"question": "What was Voice Share Pct in FY21?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY21", "expected_value": "32.97"}
+{"question": "What was Data Share Pct in FY21?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY21", "expected_value": "17.89"}
+{"question": "What was Messaging Share Pct in FY21?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY21", "expected_value": "5.43"}
+{"question": "What was Mpesa Share Pct in FY21?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY21", "expected_value": "33.01"}
+{"question": "What was Fixed Iot Share Pct in FY21?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY21", "expected_value": "3.8"}
+{"question": "What was Voice Yoy Pct in FY21?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY21", "expected_value": "-4.6"}
+{"question": "What was Data Yoy Pct in FY21?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY21", "expected_value": "11.53"}
+{"question": "What was Messaging Yoy Pct in FY21?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY21", "expected_value": "-11.69"}
+{"question": "What was Mpesa Yoy Pct in FY21?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY21", "expected_value": "-2.12"}
+{"question": "What was Fixed Iot Yoy Pct in FY21?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY21", "expected_value": "6.02"}
+{"question": "What was Voice Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY22", "expected_value": "83.21"}
+{"question": "What was Mobile Data Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY22", "expected_value": "48.44"}
+{"question": "What was Messaging Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY22", "expected_value": "10.88"}
+{"question": "What was Mobile Incoming Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY22", "expected_value": "9.85"}
+{"question": "What was Other Mobile Service Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY22", "expected_value": "9.32"}
+{"question": "What was Mpesa Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY22", "expected_value": "107.69"}
+{"question": "What was Fixed Service Iot Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY22", "expected_value": "11.72"}
+{"question": "What was Connectivity Total Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY22", "expected_value": "161.7"}
+{"question": "What was Total Service Revenue Kes Bn in FY22?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY22", "expected_value": "281.11"}
+{"question": "What was Voice Share Pct in FY22?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY22", "expected_value": "29.6"}
+{"question": "What was Data Share Pct in FY22?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY22", "expected_value": "17.23"}
+{"question": "What was Messaging Share Pct in FY22?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY22", "expected_value": "3.87"}
+{"question": "What was Mpesa Share Pct in FY22?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY22", "expected_value": "38.31"}
+{"question": "What was Fixed Iot Share Pct in FY22?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY22", "expected_value": "4.17"}
+{"question": "What was Voice Yoy Pct in FY22?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY22", "expected_value": "0.8"}
+{"question": "What was Data Yoy Pct in FY22?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY22", "expected_value": "8.15"}
+{"question": "What was Messaging Yoy Pct in FY22?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY22", "expected_value": "-20"}
+{"question": "What was Mpesa Yoy Pct in FY22?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY22", "expected_value": "30.3"}
+{"question": "What was Fixed Iot Yoy Pct in FY22?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY22", "expected_value": "23.24"}
+{"question": "What was Voice Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY23", "expected_value": "80.92"}
+{"question": "What was Mobile Data Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY23", "expected_value": "53.6"}
+{"question": "What was Messaging Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY23", "expected_value": "11.37"}
+{"question": "What was Mobile Incoming Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY23", "expected_value": "8.06"}
+{"question": "What was Other Mobile Service Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY23", "expected_value": "9.79"}
+{"question": "What was Mpesa Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY23", "expected_value": "117.19"}
+{"question": "What was Fixed Service Iot Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY23", "expected_value": "14.26"}
+{"question": "What was Connectivity Total Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY23", "expected_value": "163.73"}
+{"question": "What was Total Service Revenue Kes Bn in FY23?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY23", "expected_value": "295.18"}
+{"question": "What was Voice Share Pct in FY23?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY23", "expected_value": "27.41"}
+{"question": "What was Data Share Pct in FY23?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY23", "expected_value": "18.16"}
+{"question": "What was Messaging Share Pct in FY23?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY23", "expected_value": "3.85"}
+{"question": "What was Mpesa Share Pct in FY23?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY23", "expected_value": "39.7"}
+{"question": "What was Fixed Iot Share Pct in FY23?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY23", "expected_value": "4.83"}
+{"question": "What was Voice Yoy Pct in FY23?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY23", "expected_value": "-2.75"}
+{"question": "What was Data Yoy Pct in FY23?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY23", "expected_value": "10.65"}
+{"question": "What was Messaging Yoy Pct in FY23?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY23", "expected_value": "4.5"}
+{"question": "What was Mpesa Yoy Pct in FY23?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY23", "expected_value": "8.82"}
+{"question": "What was Fixed Iot Yoy Pct in FY23?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY23", "expected_value": "21.67"}
+{"question": "What was Voice Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY24", "expected_value": "79.51"}
+{"question": "What was Mobile Data Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY24", "expected_value": "63.24"}
+{"question": "What was Messaging Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY24", "expected_value": "12.28"}
+{"question": "What was Mobile Incoming Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY24", "expected_value": "8.25"}
+{"question": "What was Other Mobile Service Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY24", "expected_value": "10.67"}
+{"question": "What was Mpesa Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY24", "expected_value": "139.91"}
+{"question": "What was Fixed Service Iot Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY24", "expected_value": "15.95"}
+{"question": "What was Connectivity Total Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY24", "expected_value": "173.94"}
+{"question": "What was Total Service Revenue Kes Bn in FY24?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY24", "expected_value": "329.81"}
+{"question": "What was Voice Share Pct in FY24?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY24", "expected_value": "24.11"}
+{"question": "What was Data Share Pct in FY24?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY24", "expected_value": "19.17"}
+{"question": "What was Messaging Share Pct in FY24?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY24", "expected_value": "3.72"}
+{"question": "What was Mpesa Share Pct in FY24?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY24", "expected_value": "42.42"}
+{"question": "What was Fixed Iot Share Pct in FY24?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY24", "expected_value": "4.84"}
+{"question": "What was Voice Yoy Pct in FY24?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY24", "expected_value": "-1.74"}
+{"question": "What was Data Yoy Pct in FY24?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY24", "expected_value": "17.99"}
+{"question": "What was Messaging Yoy Pct in FY24?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY24", "expected_value": "8"}
+{"question": "What was Mpesa Yoy Pct in FY24?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY24", "expected_value": "19.39"}
+{"question": "What was Fixed Iot Yoy Pct in FY24?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY24", "expected_value": "11.85"}
+{"question": "What was Voice Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY25", "expected_value": "80.78"}
+{"question": "What was Mobile Data Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY25", "expected_value": "72.86"}
+{"question": "What was Messaging Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY25", "expected_value": "12.48"}
+{"question": "What was Mobile Incoming Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY25", "expected_value": "7.86"}
+{"question": "What was Other Mobile Service Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY25", "expected_value": "11.18"}
+{"question": "What was Mpesa Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY25", "expected_value": "161.12"}
+{"question": "What was Fixed Service Iot Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY25", "expected_value": "18"}
+{"question": "What was Connectivity Total Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY25", "expected_value": "185.16"}
+{"question": "What was Total Service Revenue Kes Bn in FY25?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY25", "expected_value": "364.28"}
+{"question": "What was Voice Share Pct in FY25?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY25", "expected_value": "22.18"}
+{"question": "What was Data Share Pct in FY25?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY25", "expected_value": "20"}
+{"question": "What was Messaging Share Pct in FY25?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY25", "expected_value": "3.43"}
+{"question": "What was Mpesa Share Pct in FY25?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY25", "expected_value": "44.23"}
+{"question": "What was Fixed Iot Share Pct in FY25?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY25", "expected_value": "4.94"}
+{"question": "What was Voice Yoy Pct in FY25?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY25", "expected_value": "1.6"}
+{"question": "What was Data Yoy Pct in FY25?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY25", "expected_value": "15.21"}
+{"question": "What was Messaging Yoy Pct in FY25?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY25", "expected_value": "1.63"}
+{"question": "What was Mpesa Yoy Pct in FY25?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY25", "expected_value": "15.16"}
+{"question": "What was Fixed Iot Yoy Pct in FY25?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY25", "expected_value": "12.85"}
+{"question": "What was Voice Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "voice_kes_bn", "fiscal_year": "FY26", "expected_value": "81.82"}
+{"question": "What was Mobile Data Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "mobile_data_kes_bn", "fiscal_year": "FY26", "expected_value": "83.35"}
+{"question": "What was Messaging Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "messaging_kes_bn", "fiscal_year": "FY26", "expected_value": "11"}
+{"question": "What was Mobile Incoming Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "mobile_incoming_kes_bn", "fiscal_year": "FY26", "expected_value": "9.07"}
+{"question": "What was Other Mobile Service Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "other_mobile_service_kes_bn", "fiscal_year": "FY26", "expected_value": "12.63"}
+{"question": "What was Mpesa Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "mpesa_kes_bn", "fiscal_year": "FY26", "expected_value": "182.73"}
+{"question": "What was Fixed Service Iot Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "fixed_service_iot_kes_bn", "fiscal_year": "FY26", "expected_value": "20.2"}
+{"question": "What was Connectivity Total Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "connectivity_total_kes_bn", "fiscal_year": "FY26", "expected_value": "197.87"}
+{"question": "What was Total Service Revenue Kes Bn in FY26?", "table": "mart_revenue_mix", "column": "total_service_revenue_kes_bn", "fiscal_year": "FY26", "expected_value": "400.79"}
+{"question": "What was Voice Share Pct in FY26?", "table": "mart_revenue_mix", "column": "voice_share_pct", "fiscal_year": "FY26", "expected_value": "20.41"}
+{"question": "What was Data Share Pct in FY26?", "table": "mart_revenue_mix", "column": "data_share_pct", "fiscal_year": "FY26", "expected_value": "20.8"}
+{"question": "What was Messaging Share Pct in FY26?", "table": "mart_revenue_mix", "column": "messaging_share_pct", "fiscal_year": "FY26", "expected_value": "2.74"}
+{"question": "What was Mpesa Share Pct in FY26?", "table": "mart_revenue_mix", "column": "mpesa_share_pct", "fiscal_year": "FY26", "expected_value": "45.59"}
+{"question": "What was Fixed Iot Share Pct in FY26?", "table": "mart_revenue_mix", "column": "fixed_iot_share_pct", "fiscal_year": "FY26", "expected_value": "5.04"}
+{"question": "What was Voice Yoy Pct in FY26?", "table": "mart_revenue_mix", "column": "voice_yoy_pct", "fiscal_year": "FY26", "expected_value": "1.29"}
+{"question": "What was Data Yoy Pct in FY26?", "table": "mart_revenue_mix", "column": "data_yoy_pct", "fiscal_year": "FY26", "expected_value": "14.4"}
+{"question": "What was Messaging Yoy Pct in FY26?", "table": "mart_revenue_mix", "column": "messaging_yoy_pct", "fiscal_year": "FY26", "expected_value": "-11.86"}
+{"question": "What was Mpesa Yoy Pct in FY26?", "table": "mart_revenue_mix", "column": "mpesa_yoy_pct", "fiscal_year": "FY26", "expected_value": "13.41"}
+{"question": "What was Fixed Iot Yoy Pct in FY26?", "table": "mart_revenue_mix", "column": "fixed_iot_yoy_pct", "fiscal_year": "FY26", "expected_value": "12.22"}
