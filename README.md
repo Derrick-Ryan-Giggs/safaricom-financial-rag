@@ -134,6 +134,34 @@ section below.
 | Press commentaries | Narrative prose, headline figures embedded in text | FY09, FY15 through FY19 |
 | Results/earnings booklets | Structured template, tables and segment detail | FY20 through FY26 |
 
+## Data Acquisition
+
+There are two ways to work with this project, depending on what you need.
+
+**Just want to run retrieval, evaluation, or inspect the data?** Nothing
+to download. `embeddings/*.jsonl` (19 files, one per PDF, ~2,100 chunks
+with 384-dim vectors) is committed directly in this repo. Clone and go —
+`retrieval/search.py`, `evaluation/metrics.py`, and
+`evaluation/answer_quality.py` all read from these files with no GCS
+access, no `gsutil`, and no re-running of extraction or embedding.
+
+**Want to run the full pipeline end to end** (extraction, chunking,
+embedding from raw PDFs, e.g. after fixing a data issue or adding a new
+year's report)? Pull the source PDFs first — they aren't committed here,
+since 19 PDFs directly in git history would permanently bloat every
+future clone:
+
+    mkdir -p raw
+    gsutil -m cp "gs://safaricom-rag/raw/*.pdf" raw/
+
+Full instructions, including the original Safaricom source as fallback,
+are in [DATA.md](DATA.md).
+
+Note: the SQL path depends on BigQuery mart tables built by a separate
+dbt project, not by this repo. Cloning this repo does not populate those
+tables regardless of which path above you take; the RAG and web-fallback
+paths do not need them. See DATA.md for detail.
+
 ## Project Structure
 
 ```
@@ -364,6 +392,16 @@ down the page.
 git clone https://github.com/Derrick-Ryan-Giggs/safaricom-financial-rag.git
 cd safaricom-financial-rag
 uv sync
+```
+
+`embeddings/*.jsonl` is already committed, so retrieval and evaluation
+work immediately after `uv sync` — no further data setup needed for
+those. Only pull the raw PDFs if you plan to re-run extraction, chunking,
+or embedding from scratch (see [Data Acquisition](#data-acquisition)):
+
+```bash
+mkdir -p raw
+gsutil -m cp "gs://safaricom-rag/raw/*.pdf" raw/
 ```
 
 Requires a `.env` file with `GOOGLE_APPLICATION_CREDENTIALS` and
