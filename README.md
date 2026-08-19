@@ -13,11 +13,13 @@ Zoomcamp 2026.
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Data Sources](#data-sources)
+- [Data Acquisition](#data-acquisition)
 - [Project Structure](#project-structure)
 - [Data Quality: What Broke and How It Was Found](#data-quality-what-broke-and-how-it-was-found)
 - [Evaluation](#evaluation)
 - [Known Limitations](#known-limitations)
 - [Screenshots](#screenshots)
+- [Credentials Required to Run](#credentials-required-to-run)
 - [Reproducibility: How to Run](#reproducibility-how-to-run)
 
 ## Problem Description
@@ -155,12 +157,12 @@ future clone:
     gsutil -m cp "gs://safaricom-rag/raw/*.pdf" raw/
 
 Full instructions, including the original Safaricom source as fallback,
-are in [DATA.md](DATA.md).
+are in [DATA.md](./DATA.md).
 
 Note: the SQL path depends on BigQuery mart tables built by a separate
 dbt project, not by this repo. Cloning this repo does not populate those
 tables regardless of which path above you take; the RAG and web-fallback
-paths do not need them. See DATA.md for detail.
+paths do not need them. See [DATA.md](./DATA.md) for detail.
 
 ## Project Structure
 
@@ -386,6 +388,38 @@ down the page.
 
 ![Qdrant dashboard showing the populated safaricom_chunks collection](docs/screenshots/qdrant-collection-populated.png)
 
+## Credentials Required to Run
+
+Running the live app (chat UI, dashboard, Airflow ingestion) requires your
+own GCP project and Qdrant instance set up as below. Cloning this repo
+alone does not give you these — each person self-hosting needs their own.
+This section does not apply if you only want retrieval/evaluation against
+the committed `embeddings/*.jsonl` (see
+[Data Acquisition](#data-acquisition)) — that path needs no credentials
+at all.
+
+**In a local `.env` file** (not committed, see `.env.example`):
+
+| Variable | What it is |
+|---|---|
+| `GOOGLE_APPLICATION_CREDENTIALS` | Path to a GCP service account JSON key with Secret Manager read access |
+| `GCP_PROJECT_ID` | Your GCP project ID (defaults to `safaricom-intelligence` if unset) |
+| `QDRANT_HOST` | Qdrant host — defaults to `localhost` for the Dockerized local instance; set to your Qdrant Cloud cluster URL for the hosted setup |
+| `QDRANT_PORT` | Defaults to `6333` |
+| `QDRANT_API_KEY` | Required if using Qdrant Cloud; unset for a local Docker instance with no auth |
+| `QDRANT_HTTPS` | Set to `true` for Qdrant Cloud, defaults to `false` for local |
+
+**In GCP Secret Manager**, under that same project, `config.py` fetches
+these by name at import time — all four must exist or the app fails to
+start:
+
+| Secret name | What it is |
+|---|---|
+| `GROQ_API_KEY` | Groq API key (router, RAG generation, SQL generation, web fallback synthesis) |
+| `GCS_BUCKET_NAME` | The GCS bucket used for raw PDF / processed JSONL backup |
+| `BIGQUERY_DATASET` | Dataset holding the archival `chunks` table |
+| `BIGQUERY_MART_DATASET` | Dataset holding the `mart_*` tables the SQL path queries — these tables themselves come from a separate dbt project, not from secrets alone (see [Data Acquisition](#data-acquisition)) |
+
 ## Reproducibility: How to Run
 
 ```bash
@@ -407,7 +441,8 @@ gsutil -m cp "gs://safaricom-rag/raw/*.pdf" raw/
 Requires a `.env` file with `GOOGLE_APPLICATION_CREDENTIALS` and
 `GCP_PROJECT_ID`; all other configuration (API keys, bucket names, dataset
 names) loads from GCP Secret Manager at runtime, never hardcoded and never
-committed.
+committed. See [Credentials Required to Run](#credentials-required-to-run)
+for the full list.
 
 **Full stack (recommended)** — `docker-compose.yml` lives at the repo
 root and brings up Postgres, Airflow, Qdrant, the chat app, and the
