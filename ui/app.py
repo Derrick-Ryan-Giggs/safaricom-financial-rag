@@ -47,6 +47,13 @@ MART_COVERAGE_NOTE = (
     "the mart tables cover a subset of FY08-FY26, with some years/columns incomplete"
 )
 
+EXAMPLE_QUESTIONS = [
+    "What was M-PESA revenue in FY2025?",
+    "What factors drove M-PESA growth?",
+    "Compare Ethiopia EBIT across FY23 and FY24.",
+    "What was Safaricom's overall equity score?",
+]
+
 st.set_page_config(page_title="Safaricom Financial Intelligence")
 st.title("Safaricom Financial Intelligence")
 st.caption("Ask about Safaricom's financials, M-PESA, or the Kenya/Ethiopia trajectory (FY08-FY26).")
@@ -275,6 +282,15 @@ def process_question(question):
     assistant_message["seq"] = save_message(assistant_message)
     st.session_state.messages.append(assistant_message)
 
+
+if not st.session_state.messages:
+    st.markdown("**Try asking:**")
+    cols = st.columns(len(EXAMPLE_QUESTIONS))
+    for col, example in zip(cols, EXAMPLE_QUESTIONS):
+        with col:
+            if st.button(example, key=f"example_{example}"):
+                process_question(example)
+                st.rerun()
 
 # Single render pass over all messages. User messages get an Edit affordance;
 # the message currently being edited renders as a text_area with Save/Cancel
