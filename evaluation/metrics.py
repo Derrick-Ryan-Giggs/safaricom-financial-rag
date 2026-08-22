@@ -52,7 +52,7 @@ def hit_rate_and_mrr(
     qdrant_client,
     embedder: OnnxEmbedder,
     num_results: int = 5,
-    alpha: float = 0.5,
+    alpha: float = 0.6,
 ) -> dict:
     """
     Single-alpha version -- runs a full hybrid_search per question. Kept

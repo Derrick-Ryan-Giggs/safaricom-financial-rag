@@ -211,15 +211,20 @@ def hybrid_search(
     qdrant_client: QdrantClient,
     embedder: OnnxEmbedder,
     num_results: int = config.NUM_RESULTS,
-    alpha: float = 0.5,
+    alpha: float = 0.6,
     fiscal_year: str | None = None,
 ) -> list[dict]:
     """
     alpha weights the keyword (minsearch) ranking; (1 - alpha) weights the
-    vector (Qdrant) ranking. alpha=0.5 is a no-op relative to the old
-    unweighted fusion. fiscal_year, if given (as a canonical "FYn" string),
-    restricts both rankings to that year; if omitted, auto-extracts one
-    from `query`.
+    vector (Qdrant) ranking. Default 0.6 is the confirmed best value from
+    evaluation/tune_alpha.py's full run against all 6,219 rows of
+    ground_truth_v1.jsonl at k=20 (matching this project's actual
+    post-rerank candidate width): Hit Rate@20=0.7086, MRR=0.4354, both the
+    best of {0.3, 0.4, 0.5, 0.6, 0.7} -- though only marginally ahead of
+    0.5 (the old unweighted-equivalent default), so don't over-read this
+    as a large tuning win. fiscal_year, if given (as a canonical "FYn"
+    string), restricts both rankings to that year; if omitted,
+    auto-extracts one from `query`.
 
     Delegates the actual retrieval to retrieve_rankings() -- this function
     now just adds fusion on top, so there's one source of truth for the
@@ -244,7 +249,7 @@ def main():
     parser = argparse.ArgumentParser(description="Hybrid search over embedded chunks.")
     parser.add_argument("--chunks", required=True, help="Glob pattern for embedded JSONL files, e.g. 'embeddings/*.jsonl'")
     parser.add_argument("--query", required=True)
-    parser.add_argument("--alpha", type=float, default=0.5, help="Keyword-ranking weight, 0-1 (default 0.5, equal weighting)")
+    parser.add_argument("--alpha", type=float, default=0.6, help="Keyword-ranking weight, 0-1 (default 0.6, confirmed best via tune_alpha.py)")
     parser.add_argument("--fiscal-year", type=str, default=None, help="Override auto-extracted fiscal year filter, e.g. FY25")
     args = parser.parse_args()
 
