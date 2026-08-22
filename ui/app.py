@@ -31,7 +31,7 @@ from openai import RateLimitError  # sql_query.py's client is OpenAI's SDK point
                                     # exception class -- not groq.RateLimitError.
 
 from ingestion.embed import OnnxEmbedder
-from monitoring.conversation_store import load_messages, save_message, truncate_from
+from monitoring.conversation_store import clear_all, load_messages, save_message, truncate_from
 from monitoring.feedback import record_feedback
 from monitoring.tracer import get_tracer
 from retrieval.rag import answer_from_chunks, is_refusal, verify_no_answer
@@ -57,6 +57,13 @@ EXAMPLE_QUESTIONS = [
 st.set_page_config(page_title="Safaricom Financial Intelligence")
 st.title("Safaricom Financial Intelligence")
 st.caption("Ask about Safaricom's financials, M-PESA, or the Kenya/Ethiopia trajectory (FY08-FY26).")
+
+# Reserves this screen position now (top of page), but its content is filled in
+# further down -- AFTER process_question() is actually defined. Streamlit renders
+# a container at the position it was CREATED, not where it's filled, so this is
+# what lets the starter-question buttons appear at the top while still safely
+# calling a function that doesn't exist yet at this point in the script.
+starter_questions_container = st.container()
 
 
 @st.cache_resource
@@ -283,12 +290,19 @@ def process_question(question):
     st.session_state.messages.append(assistant_message)
 
 
-if not st.session_state.messages:
+with starter_questions_container:
     st.markdown("**Try asking:**")
     cols = st.columns(len(EXAMPLE_QUESTIONS))
     for col, example in zip(cols, EXAMPLE_QUESTIONS):
         with col:
             if st.button(example, key=f"example_{example}"):
+                # Starter questions start a FRESH conversation, not append to
+                # whatever's already there. clear_all() wipes the persisted
+                # store directly, so the clicked question becomes message #1
+                # and stays that way across reloads, rather than only looking
+                # that way until load_messages() pulls the old history back in.
+                clear_all()
+                st.session_state.messages = []
                 process_question(example)
                 st.rerun()
 
