@@ -12,6 +12,6 @@ models/
 raw/*.pdf
 processed/*.jsonl
 .DS_Store
-
-
 build.log
+*.bak
+*.jsonl

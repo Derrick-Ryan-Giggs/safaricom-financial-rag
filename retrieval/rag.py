@@ -15,6 +15,7 @@ from openai import OpenAI
 
 import config
 from ingestion.embed import OnnxEmbedder
+from retrieval.rerank import rerank_chunks
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
 
 # Moved here from evaluation/answer_quality.py: originally a diagnostic-only
@@ -173,12 +174,18 @@ def answer_question(
     chunks are used for both the Sources display and generation -- see
     answer_from_chunks()'s docstring for why that distinction matters.
 
-    num_results defaults higher here than config.NUM_RESULTS (2) -- "why"
-    questions need more supporting context across fiscal years, and since
-    chunks here top out around 128 tokens (confirmed empirically), even
-    10 chunks stays well within Groq's 6,000 TPM limit.
+    num_results is the FINAL count after reranking, matching ui/app.py's
+    run_rag_fallback pattern: retrieves a wider 2x candidate pool via
+    hybrid_search, then reranks down to num_results via
+    retrieval/rerank.py's cross-encoder. Kept in sync deliberately -- if
+    this wrapper is what evaluation/answer_quality.py calls to generate
+    answers for scoring, it needs to go through the same retrieve+rerank
+    steps as production, or the eval isn't measuring what's actually live.
     """
-    chunks = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=num_results)
+    candidates = hybrid_search(
+        question, records, minsearch_index, qdrant_client, embedder, num_results=num_results * 2
+    )
+    chunks = rerank_chunks(question, candidates, top_n=num_results)
     return answer_from_chunks(question, chunks)
 
 

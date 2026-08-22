@@ -26,12 +26,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
+from openai import RateLimitError  # sql_query.py's client is OpenAI's SDK pointed at Groq's
+                                    # OpenAI-compatible endpoint, so this is the correct
+                                    # exception class -- not groq.RateLimitError.
 
 from ingestion.embed import OnnxEmbedder
 from monitoring.conversation_store import load_messages, save_message, truncate_from
 from monitoring.feedback import record_feedback
 from monitoring.tracer import get_tracer
 from retrieval.rag import answer_from_chunks, is_refusal, verify_no_answer
+from retrieval.rerank import rerank_chunks
 from retrieval.router import classify_question
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
 from retrieval.sql_query import SQLGenerationError, format_results, run_query
@@ -113,9 +117,13 @@ def render_feedback_buttons(message):
 
 def run_rag_fallback(question):
     """
-    Search the full FY08-26 PDF corpus (jsonl chunks) directly -- ONE
-    hybrid_search call, whose result is used for both the Sources display
-    and generation (see answer_from_chunks' docstring in retrieval/rag.py).
+    Search the full FY08-26 PDF corpus (jsonl chunks) directly. Retrieves a
+    wider top-20 RRF-fused candidate set via ONE hybrid_search call, then
+    reranks down to the top-10 most relevant via a cross-encoder before
+    generation -- RRF fusion rank and true query-relevance aren't the same
+    thing, so this narrows on relevance specifically, right before the
+    chunks are used for both the Sources display and generation (see
+    answer_from_chunks' docstring in retrieval/rag.py).
 
     Returns pieces separately (rag_answer, rag_was_refusal, web_answer,
     sources, web_sources) rather than one pre-composed string, so each
@@ -124,7 +132,8 @@ def run_rag_fallback(question):
     say" immediately followed by the model's own "the reports don't have
     this" refusal text.
     """
-    sources = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=10)
+    candidates = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=20)
+    sources = rerank_chunks(question, candidates, top_n=10)
     rag_answer = answer_from_chunks(question, sources)
     rag_was_refusal = is_refusal(rag_answer)
 
@@ -194,9 +203,17 @@ def process_question(question):
                 except SQLGenerationError as e:
                     generated_sql = e.sql
                     rows = None  # signal: SQL failed outright, not just empty
-                except Exception as e:
+                except RateLimitError:
+                    # Confirmed live Aug 17: the old generic except below
+                    # embedded str(e) directly in the user-facing answer,
+                    # which for a 429 is the provider's raw JSON error body.
+                    # This catch runs first and gives a plain message instead.
                     generated_sql = None
-                    answer = f"Sorry, I couldn't run a valid query for that question. ({e})"
+                    answer = "I'm getting a lot of questions right now -- please try again in a few seconds."
+                    rows = "error_handled"  # sentinel so we skip the block below
+                except Exception:
+                    generated_sql = None
+                    answer = "Sorry, I couldn't run a valid query for that question."
                     rows = "error_handled"  # sentinel so we skip the block below
 
                 if rows == "error_handled":

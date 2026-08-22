@@ -13,6 +13,7 @@ Usage:
 
 import argparse
 import json
+import re
 
 from google.cloud import bigquery
 from openai import OpenAI
@@ -41,6 +42,11 @@ something that runs without error. A query that runs but answers nothing is wors
 there's no match: it looks like a real (empty) result instead of an honest "not available here."
 Instead, respond with exactly this and nothing else: NO_MATCHING_COLUMN
 
+If the schema only contains a broader or differently-scoped column than what the question actually
+asks for -- for example, a total/aggregate transaction-value column when the question asks about a
+specific narrower category like person-to-person transfers specifically -- do NOT substitute that
+column as if it answers the question. Treat this the same as no match: respond NO_MATCHING_COLUMN.
+
 fiscal_year is stored as a full 4-digit integer (see the example row below) -- NOT a 2-digit short form.
 A question naming "FY26" means fiscal_year = 2026, not fiscal_year = 26.
 
@@ -62,6 +68,11 @@ A: NO_MATCHING_COLUMN
 
 MAX_SQL_RETRIES = 2
 
+# Words that can legitimately appear in a SELECT clause without being real
+# column names -- excluded from the schema-validation guard's candidate set
+# so aggregate/aliasing SQL doesn't get incorrectly flagged as hallucinated.
+SQL_SELECT_KEYWORDS = {"as", "distinct", "sum", "avg", "count", "min", "max", "case", "when", "then", "else", "end"}
+
 
 class SQLGenerationError(Exception):
     """
@@ -80,17 +91,33 @@ def get_bq_client() -> bigquery.Client:
     return bigquery.Client(project=config.GCP_PROJECT_ID)
 
 
-def get_mart_schema(client: bigquery.Client) -> str:
+def get_mart_schema(client: bigquery.Client) -> tuple[str, dict[str, set[str]]]:
     """
     Introspect column names and types for each mart table, plus one real
     sample row per table, formatted as a compact text block for the LLM
     prompt. The sample row exists specifically so the model sees actual
-    value formats (e.g. fiscal_year=2026, not "26") instead of guessing --
-    confirmed via evaluation/sql_eval.py that without this, the generator
-    is inconsistent about whether fiscal_year is 2-digit or 4-digit for the
-    exact same question pattern.
+    value formats (e.g. fiscal_year=2026, not "26") instead of guessing.
+
+    Returns (formatted_text_for_prompt, {table_name: {column_names}}) --
+    both are derived from the same client.get_table() calls, so
+    run_query()'s schema-validation guard doesn't need a second round-trip
+    to BigQuery just to get column names already fetched here.
+
+    Sample row is now selected via ORDER BY fiscal_year DESC LIMIT 1, not a
+    bare LIMIT 1. DIAGNOSED (not yet confirmed end-to-end): a bare LIMIT 1
+    has no guaranteed row order in BigQuery, so the specific example row
+    shown to the model could vary between otherwise-identical calls -- a
+    plausible explanation for the confirmed live bug where the same
+    question produced two different SQL outcomes across two runs, since a
+    changed example row changes the prompt even at temperature=0. This
+    assumes fiscal_year exists on all three mart tables, consistent with
+    every worked example and system-prompt note above; if that's ever not
+    true for a given table, this ORDER BY will raise and get caught by the
+    existing try/except below (logged as a warning, sample row omitted).
     """
     lines = []
+    schema_columns: dict[str, set[str]] = {}
+
     for table_name in MART_TABLES:
         table_ref = f"{config.GCP_PROJECT_ID}.{config.BIGQUERY_MART_DATASET}.{table_name}"
         try:
@@ -99,11 +126,15 @@ def get_mart_schema(client: bigquery.Client) -> str:
             print(f"Warning: could not read schema for {table_name}: {e}")
             continue
 
+        schema_columns[table_name] = {field.name for field in table.schema}
+
         columns = ", ".join(f"{field.name} ({field.field_type})" for field in table.schema)
         lines.append(f"Table `{table_name}`: {columns}")
 
         try:
-            sample_rows = list(client.query(f"SELECT * FROM `{table_ref}` LIMIT 1").result())
+            sample_rows = list(
+                client.query(f"SELECT * FROM `{table_ref}` ORDER BY fiscal_year DESC LIMIT 1").result()
+            )
             if sample_rows:
                 sample = dict(sample_rows[0])
                 sample_str = ", ".join(f"{k}={v}" for k, v in sample.items())
@@ -111,7 +142,53 @@ def get_mart_schema(client: bigquery.Client) -> str:
         except Exception as e:
             print(f"Warning: could not fetch sample row for {table_name}: {e}")
 
-    return "\n".join(lines)
+    return "\n".join(lines), schema_columns
+
+
+def validate_sql_columns(sql: str, schema_columns: dict[str, set[str]]) -> bool:
+    """
+    Guard against hallucinated table/column names: extracts the target
+    table and the SELECT-list column names from the generated SQL and
+    checks them against the real introspected schema.
+
+    NOT a full SQL parser -- covers the SELECT clause specifically (regex,
+    not an AST), matching every worked example in SQL_SYSTEM_PROMPT (plain
+    column lists, no aliases, no aggregate wrapping). If the model starts
+    generating `AS` aliases or `SUM(...)`-wrapped expressions beyond what's
+    excluded via SQL_SELECT_KEYWORDS, this can false-positive (block a
+    valid query because an alias isn't a real column) -- worth swapping for
+    a real SQL parser (e.g. sqlglot) if that starts happening in practice.
+
+    IMPORTANT LIMITATION: this only catches columns that don't exist at
+    all. It does NOT catch a real, existing column used for the wrong
+    thing -- e.g. the confirmed live bug where mpesa_txn_value_kes_bn (a
+    real column) was used to answer a person-to-person-specific question.
+    That failure mode is addressed by the SQL_SYSTEM_PROMPT addition above
+    instead, since "is this real" and "is this the right one" are
+    different questions -- this function only answers the first.
+    """
+    table_match = re.search(r"FROM\s+`?([a-zA-Z0-9_.]+)`?", sql, re.IGNORECASE)
+    if not table_match:
+        return False
+
+    table_name = table_match.group(1).split(".")[-1]
+    if table_name not in schema_columns:
+        return False
+
+    valid_columns = schema_columns[table_name]
+
+    select_match = re.search(r"SELECT\s+(.*?)\s+FROM", sql, re.IGNORECASE | re.DOTALL)
+    if not select_match:
+        return False
+
+    select_clause = select_match.group(1).strip()
+    if select_clause == "*":
+        return True  # not expected per SQL_SYSTEM_PROMPT's worked examples, but not a hallucination either
+
+    candidates = re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*", select_clause)
+    referenced_columns = {c for c in candidates if c.lower() not in SQL_SELECT_KEYWORDS}
+
+    return referenced_columns.issubset(valid_columns)
 
 
 def generate_sql(
@@ -173,7 +250,7 @@ def run_query(question: str, return_sql: bool = False, model: str = config.LLM_M
     though it didn't run.
     """
     client = get_bq_client()
-    schema = get_mart_schema(client)
+    schema, schema_columns = get_mart_schema(client)
     sql = generate_sql(question, schema, model=model)
 
     job_config = bigquery.QueryJobConfig(
@@ -196,6 +273,17 @@ def run_query(question: str, return_sql: bool = False, model: str = config.LLM_M
             # to RAG), so mapping this to the same outcome is the correct
             # semantics, not a special case to add elsewhere.
             print("Model determined no schema column matches this question.")
+            if return_sql:
+                return [], sql
+            return []
+
+        if not validate_sql_columns(sql, schema_columns):
+            # Schema-validation guard: don't trust the model's own
+            # self-report that a column exists -- check it against the
+            # real introspected schema. Only catches non-existent
+            # table/column references, not real-but-wrong-scope ones (see
+            # validate_sql_columns' docstring).
+            print(f"Generated SQL references a table/column not in the real schema -- treating as NO_MATCHING_COLUMN:\n{sql}\n")
             if return_sql:
                 return [], sql
             return []
