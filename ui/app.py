@@ -83,9 +83,9 @@ MART_COVERAGE_NOTE = (
 
 EXAMPLE_QUESTIONS = [
     "What was M-PESA revenue in FY2025?",
-    "What factors drove M-PESA growth?",
+    "What is Safaricom's goal by the end of 2030?",
     "Compare Ethiopia EBIT across FY23 and FY24.",
-    "What was Safaricom's overall equity score?",
+    "What type of financial information does the Safaricom annual report include?",
 ]
 
 st.set_page_config(page_title="Safaricom Financial Intelligence")
