@@ -1,35 +1,46 @@
 """
 monitoring/conversation_store.py
 
-Persists the chat conversation to Firestore. Migrated from local SQLite --
-Cloud Run instances are stateless and ephemeral with no shared disk between
-instances, and everything is wiped on scale-to-zero or a new revision, so a
-local sqlite3 file only ever survived within one instance's lifetime and
-was invisible to any other instance. Firestore is reachable identically
-from every instance via the same attached service account already used for
-BigQuery and Secret Manager elsewhere in this project -- no new auth
-pattern, just an added `roles/datastore.user` IAM grant.
+Persists the chat conversation to Firestore, partitioned by session_id so
+each browser session gets its own isolated conversation thread instead of
+every visitor to the deployed URL sharing one. Migrated from local SQLite
+-- Cloud Run instances are stateless and ephemeral with no shared disk
+between instances, and everything is wiped on scale-to-zero or a new
+revision, so a local sqlite3 file only ever survived within one instance's
+lifetime and was invisible to any other instance.
 
-Same message dict shape and function signatures as the prior SQLite
-version (save_message returns an int seq, load_messages returns messages
-ordered by seq ascending, truncate_from(seq) deletes that message and
-everything after it) -- ui/app.py needed NO changes for this migration.
+session_id is generated client-side in ui/app.py (a UUID stored in the
+URL's query params, so it survives a page refresh but differs per visitor)
+and threaded through every function here -- this is a real signature
+change from the pre-session-isolation version, so ui/app.py's call sites
+needed updating too, unlike the earlier SQLite -> Firestore migration
+which kept signatures identical.
 
-Single-user, single-conversation store -- no multi-user/session keying.
-Appropriate for a personal tool, not a multi-tenant product. At real
-multi-instance concurrency this would need per-session keying to avoid
-different users sharing one conversation; not a concern at this project's
-actual traffic level.
+REQUIRES a composite index (session_id ASC, seq ASC) on the
+conversation_messages collection -- both load_messages (equality filter +
+order_by on a different field) and truncate_from (equality filter + range
+filter on a different field) need one. Without it, these queries throw
+FailedPrecondition at runtime rather than degrading gracefully:
+    gcloud firestore indexes composite create \\
+        --collection-group=conversation_messages \\
+        --field-config=field-path=session_id,order=ascending \\
+        --field-config=field-path=seq,order=ascending \\
+        --project=safaricom-intelligence
 
-Requires a Firestore database to exist first (Native mode, one-time):
+Also requires (same as before this file's session-isolation update):
     gcloud firestore databases create --database="(default)" \\
         --location=africa-south1 --project=safaricom-intelligence \\
         --type=firestore-native
 
-And the service account needs read/write access:
     gcloud projects add-iam-policy-binding safaricom-intelligence \\
         --member="serviceAccount:safaricom-intel-sa@safaricom-intelligence.iam.gserviceaccount.com" \\
         --role="roles/datastore.user"
+
+NOT a real multi-tenant auth system -- session_id has no identity behind
+it, isn't validated, and isn't tied to a user account. It only prevents
+different browser sessions from accidentally sharing/colliding on one
+conversation. Appropriate for a personal demo tool, not a product with
+real users to protect from each other.
 """
 
 import time
@@ -55,14 +66,13 @@ def _get_client() -> firestore.Client:
 def _increment_counter(transaction: firestore.Transaction, counter_ref) -> int:
     """
     Firestore has no native autoincrement, unlike SQLite's AUTOINCREMENT
-    this was built on. A transaction on a single counter document is what
-    guarantees the same strictly-increasing, collision-free seq values --
-    a plain read-then-write (without a transaction) would risk two
-    concurrent writers both reading the same current value and producing
-    a duplicate seq; a timestamp-based approach would avoid the
-    transaction but isn't a guaranteed match for SQLite's exact semantics.
-    Given this is confirmed single-user, contention is very unlikely in
-    practice, but the transaction costs nothing extra to keep.
+    this was built on. A transaction on a single counter document
+    guarantees strictly-increasing, collision-free seq values even across
+    different sessions writing concurrently. The counter is intentionally
+    GLOBAL (shared across all sessions), not per-session -- that's simpler
+    than sharded per-session counters and still gives every message a
+    unique seq, since uniqueness (not per-session sequential numbering
+    starting at 1) is all truncate_from/document-ID-as-seq actually needs.
     """
     snapshot = counter_ref.get(transaction=transaction)
     current = snapshot.get("value") if snapshot.exists else 0
@@ -98,12 +108,13 @@ def _slim_sources(sources: list[dict] | None) -> list[dict]:
     ]
 
 
-def save_message(message: dict) -> int:
+def save_message(message: dict, session_id: str) -> int:
     """Insert one message (same dict shape used in st.session_state.messages) and return its seq."""
     seq = _next_seq()
     db = _get_client()
     db.collection(COLLECTION).document(str(seq)).set({
         "seq": seq,
+        "session_id": session_id,
         "message_id": message["id"],
         "role": message["role"],
         "content": message["content"],
@@ -117,10 +128,15 @@ def save_message(message: dict) -> int:
     return seq
 
 
-def load_messages() -> list[dict]:
-    """Reconstruct st.session_state.messages' shape, in original order."""
+def load_messages(session_id: str) -> list[dict]:
+    """Reconstruct st.session_state.messages' shape for this session only, in original order."""
     db = _get_client()
-    docs = db.collection(COLLECTION).order_by("seq", direction=firestore.Query.ASCENDING).stream()
+    docs = (
+        db.collection(COLLECTION)
+        .where("session_id", "==", session_id)
+        .order_by("seq", direction=firestore.Query.ASCENDING)
+        .stream()
+    )
 
     messages = []
     for doc in docs:
@@ -144,7 +160,7 @@ def _delete_matching(query) -> None:
     Shared batch-delete helper for truncate_from/clear_all. Firestore
     batched writes cap at 500 operations -- chunks into multiple batches
     when there's more history than that, rather than assuming it always
-    fits in one (a real risk for clear_all on a long-lived conversation).
+    fits in one.
     """
     db = _get_client()
     batch = db.batch()
@@ -160,12 +176,23 @@ def _delete_matching(query) -> None:
         batch.commit()
 
 
-def truncate_from(seq: int) -> None:
-    """Delete this message and everything inserted after it (used when an edited question is resubmitted)."""
+def truncate_from(seq: int, session_id: str) -> None:
+    """
+    Delete this message and everything inserted after it, WITHIN this
+    session only (used when an edited question is resubmitted). The
+    session_id filter matters here specifically -- without it, editing a
+    message would delete every session's messages from that global seq
+    onward, not just the editing session's own history.
+    """
     db = _get_client()
-    _delete_matching(db.collection(COLLECTION).where("seq", ">=", seq))
+    _delete_matching(
+        db.collection(COLLECTION)
+        .where("session_id", "==", session_id)
+        .where("seq", ">=", seq)
+    )
 
 
-def clear_all() -> None:
+def clear_all(session_id: str) -> None:
+    """Wipe this session's conversation only -- other sessions are untouched."""
     db = _get_client()
-    _delete_matching(db.collection(COLLECTION))
+    _delete_matching(db.collection(COLLECTION).where("session_id", "==", session_id))

@@ -83,9 +83,9 @@ MART_COVERAGE_NOTE = (
 
 EXAMPLE_QUESTIONS = [
     "What was M-PESA revenue in FY2025?",
-    "What is Safaricom's goal by the end of 2030?",
+    "What factors drove M-PESA growth?",
     "Compare Ethiopia EBIT across FY23 and FY24.",
-    "What type of financial information does the Safaricom annual report include?",
+    "What was Safaricom's overall equity score?",
 ]
 
 st.set_page_config(page_title="Safaricom Financial Intelligence")
@@ -97,12 +97,7 @@ st.caption("Ask about Safaricom's financials, M-PESA, or the Kenya/Ethiopia traj
 # a container at the position it was CREATED, not where it's filled, so this is
 # what lets the starter-question buttons appear at the top while still safely
 # calling a function that doesn't exist yet at this point in the script.
-#
-# The explicit key gives this container a stable CSS class (st-key-starter_questions)
-# so the button-sizing rule below only ever touches these four buttons -- never the
-# Edit/Save/Cancel buttons or the thumbs feedback buttons rendered elsewhere in the
-# script, which also happen to be st.button calls.
-starter_questions_container = st.container(key="starter_questions")
+starter_questions_container = st.container()
 
 
 @st.cache_resource
@@ -117,8 +112,17 @@ def load_retrieval_stack():
 records, minsearch_index, qdrant_client, embedder = load_retrieval_stack()
 tracer = get_tracer()
 
+# Session isolation: a random ID stored in the URL's query params, so it
+# survives a page refresh (same URL = same ID) but differs per visitor (a
+# fresh visit with no session_id in the URL gets a new one). Every
+# conversation_store call below is scoped to this ID, so different
+# visitors to the deployed app don't share or collide on one conversation.
+if "session_id" not in st.query_params:
+    st.query_params["session_id"] = str(uuid.uuid4())
+SESSION_ID = st.query_params["session_id"]
+
 if "messages" not in st.session_state:
-    st.session_state.messages = load_messages()
+    st.session_state.messages = load_messages(SESSION_ID)
 if "editing_id" not in st.session_state:
     st.session_state.editing_id = None
 
@@ -262,7 +266,7 @@ def process_question(question):
         "role": "user",
         "content": question,
     }
-    user_message["seq"] = save_message(user_message)
+    user_message["seq"] = save_message(user_message, SESSION_ID)
     st.session_state.messages.append(user_message)
 
     trace_id = str(uuid.uuid4())
@@ -367,47 +371,22 @@ def process_question(question):
         "trace_id": trace_id,
         "question": question,
     }
-    assistant_message["seq"] = save_message(assistant_message)
+    assistant_message["seq"] = save_message(assistant_message, SESSION_ID)
     st.session_state.messages.append(assistant_message)
 
 
 with starter_questions_container:
     st.markdown("**Try asking:**")
-    # Scoped to .st-key-starter_questions (the container key set above), so this
-    # only touches the four starter-question buttons below -- not the Edit,
-    # Save/Cancel, or thumbs-feedback buttons rendered elsewhere in the script.
-    #
-    # Fixed height + line-clamp keeps all four buttons the same size regardless
-    # of how long each question's text is: short questions get vertical padding,
-    # questions too long to fit within 3 lines are truncated with "..." instead
-    # of growing the box. Swap EXAMPLE_QUESTIONS to anything, short or long, and
-    # the containers stay uniform without touching this CSS again.
-    st.markdown(
-        """
-        <style>
-        .st-key-starter_questions .stButton > button {
-            height: 96px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            white-space: normal;
-            text-align: center;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
     cols = st.columns(len(EXAMPLE_QUESTIONS))
     for col, example in zip(cols, EXAMPLE_QUESTIONS):
         with col:
-            if st.button(example, key=f"example_{example}", use_container_width=True):
+            if st.button(example, key=f"example_{example}"):
                 # Starter questions start a FRESH conversation, not append to
                 # whatever's already there. clear_all() wipes the persisted
                 # store directly, so the clicked question becomes message #1
                 # and stays that way across reloads, rather than only looking
                 # that way until load_messages() pulls the old history back in.
-                clear_all()
+                clear_all(SESSION_ID)
                 st.session_state.messages = []
                 process_question(example)
                 st.rerun()
@@ -435,7 +414,7 @@ while i < len(messages):
                 with save_col:
                     if st.button("Save", key=f"save_{message['id']}"):
                         if message.get("seq") is not None:
-                            truncate_from(message["seq"])
+                            truncate_from(message["seq"], SESSION_ID)
                         st.session_state.messages = st.session_state.messages[:i]
                         st.session_state.editing_id = None
                         process_question(new_text)
