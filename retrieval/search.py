@@ -128,6 +128,19 @@ def build_qdrant_client(records: list[dict]) -> QdrantClient:
             collection_name=COLLECTION_NAME,
             vectors_config=VectorParams(size=EMBEDDING_DIM, distance=Distance.COSINE),
         )
+        # CONFIRMED live on Qdrant Cloud (not locally -- server-version-
+        # dependent behavior): filtering on a payload field via
+        # FieldCondition/MatchValue throws a 400 "Index required but not
+        # found" unless an explicit payload index exists for that field
+        # first. Creating it here means every future delete+reseed of this
+        # collection (local or Cloud) gets it automatically -- this isn't
+        # just a one-off fix for the collection that broke, it's what
+        # prevents the same crash after the next rebuild.
+        client.create_payload_index(
+            collection_name=COLLECTION_NAME,
+            field_name="fiscal_year",
+            field_schema="keyword",
+        )
         points = [
             PointStruct(id=i, vector=record["embedding"], payload=record)
             for i, record in enumerate(records)
