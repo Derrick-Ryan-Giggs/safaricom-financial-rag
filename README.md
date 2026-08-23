@@ -18,6 +18,7 @@ Zoomcamp 2026.
 - [Data Quality: What Broke and How It Was Found](#data-quality-what-broke-and-how-it-was-found)
 - [Evaluation](#evaluation)
 - [Known Limitations](#known-limitations)
+- [Live Demo](#live-demo)
 - [Screenshots](#screenshots)
 - [Credentials Required to Run](#credentials-required-to-run)
 - [Reproducibility: How to Run](#reproducibility-how-to-run)
@@ -50,8 +51,9 @@ three gaps from one interface.
 | Structured data | BigQuery mart tables (`mart_ke_et_trajectory`, `mart_mpesa_growth_trends`, `mart_revenue_mix`), built in a separate dbt project |
 | Unstructured data | ~2,100 chunks extracted from 19 PDFs, embedded and indexed for hybrid search |
 | Fallback | Live web search when neither internal source has enough to answer, clearly labeled as unverified against a primary source |
-| Interface | Streamlit chat, source citations, thumbs up/down feedback |
+| Interface | Streamlit chat, source citations linked directly to the source PDF, session-isolated conversation history, thumbs up/down feedback |
 | Orchestration | Airflow DAG with dynamic task mapping, one extract/chunk/embed cycle per discovered PDF |
+| Deployment | Containerized on Google Cloud Run, scales to zero |
 
 Key questions this answers:
 
@@ -59,7 +61,7 @@ Key questions this answers:
   to the year before? (SQL path)
 - What factors drove a specific metric's growth or decline, based on
   Safaricom's own stated commentary? (RAG path, cited by fiscal year and
-  page number)
+  page number, linked to the original PDF)
 - Anything current-events-adjacent or outside the PDF corpus entirely,
   answered via live search, explicitly flagged as not verified against a
   primary source.
@@ -76,27 +78,37 @@ Chunking (500 tokens, 50 overlap, sentence-boundary-aware)
         |
 ONNX embeddings (all-MiniLM-L6-v2, 384-dim, CPU-only)
         |
-Hybrid search: minsearch (keyword) + Qdrant (vector) + Reciprocal Rank
-Fusion
+Fiscal year normalized to one canonical form at load time -- the raw
+corpus spells the same year multiple ways depending on source
+document (e.g. "FY_8" and "FY8" both exist for FY2008)
         |
-        +----------------------------------------------------------+
-        |                                                          |
-LLM Router                                                          |
-    |                                                               |
-    +-- SQL questions --> BigQuery, generated + validated SQL       |
-    |                     against mart_ke_et_trajectory,            |
-    |                     mart_mpesa_growth_trends,                 |
-    |                     mart_revenue_mix                          |
-    |                                                               |
-    +-- Narrative questions --> hybrid search --> LLM generation,   |
-    |                           cited by fiscal year + page number  |
-    |                                                               |
-    +-- Neither has enough --> live web search fallback, answer     |
-                                explicitly labeled as unverified     |
-                                against a primary source             |
+LLM Router (SQL vs narrative vs neither)
+    |
+    +-- SQL questions --> BigQuery: generated SQL, validated against
+    |                     the live schema before running (rejects
+    |                     hallucinated table/column references) --
+    |                     mart_ke_et_trajectory, mart_mpesa_growth_
+    |                     trends, mart_revenue_mix
+    |
+    +-- Narrative questions --> hybrid search (minsearch keyword +
+    |                           Qdrant vector, Reciprocal Rank
+    |                           Fusion weighted toward keyword
+    |                           matches, optional fiscal-year
+    |                           filter) --> top-20 candidates -->
+    |                           cross-encoder reranking --> top-10
+    |                           --> LLM generation, cited by fiscal
+    |                           year and page number, source panel
+    |                           links directly to the original PDF
+    |
+    +-- Neither has enough --> live web search fallback, answer
+                                explicitly labeled as unverified
+                                against a primary source
         |
-Streamlit chat interface, OpenTelemetry tracing, thumbs up/down
-feedback, feedback dashboard
+Streamlit chat interface -- conversation history isolated per
+browser session (Firestore-backed, survives container restarts),
+OpenTelemetry tracing, thumbs up/down feedback, feedback dashboard
+        |
+Deployed on Google Cloud Run, scales to zero
 ```
 
 Ingestion (extract -> chunk -> embed -> refresh BigQuery -> upload to GCS)
@@ -110,17 +122,21 @@ production system).
 
 | Layer | Tool | Purpose |
 |---|---|---|
-| LLM | Groq (`openai/gpt-oss-120b`) | Router classification, SQL generation, RAG generation, web fallback synthesis |
+| LLM | Groq (`openai/gpt-oss-120b`) | RAG generation, SQL generation, web fallback synthesis |
+| LLM (lightweight tasks) | Groq (`openai/gpt-oss-20b`) | Router classification and answer judging -- higher free-tier TPM budget than the 120b model, and neither task needs the larger model's reasoning depth |
 | Embeddings | ONNX Runtime, `Xenova/all-MiniLM-L6-v2` | 384-dim, CPU-only, avoids a ~2GB CUDA PyTorch pull for a project with no GPU |
-| Vector search | Qdrant | In-memory, HNSW, cosine distance |
-| Keyword search | minsearch | Combined with vector search via Reciprocal Rank Fusion |
+| Reranking | fastembed cross-encoder, `Xenova/ms-marco-MiniLM-L-6-v2` | Reorders the top-20 RRF-fused candidates by actual query relevance before generation -- RRF rank and true relevance aren't the same thing |
+| Vector search | Qdrant | Cosine distance, HNSW; local Docker instance for development, Qdrant Cloud for the deployed app |
+| Keyword search | minsearch | Combined with vector search via alpha-weighted Reciprocal Rank Fusion |
 | PDF extraction | `unstructured[pdf]` | `hi_res` strategy, table structure inference, Tesseract OCR |
 | Structured data | BigQuery | Mart tables (separate dbt project) plus a refreshed chunks/embeddings table for the RAG side |
 | Web fallback | `duckduckgo_search` (DDGS) | No API key required |
 | Orchestration | Apache Airflow | LocalExecutor, Docker Compose, dynamic task mapping |
 | Interface | Streamlit | Chat UI plus a separate feedback dashboard |
+| Conversation persistence | Firestore | Session-isolated chat history (session ID in the URL), survives Cloud Run cold starts and container recycling -- a local SQLite file, used earlier in development, doesn't survive either |
 | Monitoring | OpenTelemetry | Custom SQLite span exporter (no collector needed at this scale) |
 | Secrets | GCP Secret Manager | Only `GOOGLE_APPLICATION_CREDENTIALS` and `GCP_PROJECT_ID` in `.env` |
+| Deployment | Google Cloud Run | Containerized, serverless, `min-instances=0` -- $0/month at personal-demo traffic levels |
 | Package management | uv | All dependency versions pinned via `uv.lock` |
 
 ## Data Sources
@@ -179,10 +195,11 @@ safaricom-financial-rag/
 │   ├── upload_gcs.py              # raw PDFs + processed JSONL to GCS
 │   └── upload_to_bigquery.py      # chunks + embeddings to BigQuery
 ├── retrieval/
-│   ├── search.py                  # hybrid search: minsearch + Qdrant + RRF
+│   ├── search.py                  # hybrid search: minsearch + Qdrant + alpha-weighted RRF, fiscal-year normalization/filtering
+│   ├── rerank.py                  # cross-encoder reranking of retrieved candidates
 │   ├── router.py                  # LLM classification: SQL vs RAG
-│   ├── sql_query.py               # BigQuery SQL generation + execution
-│   ├── rag.py                     # hybrid search + LLM generation
+│   ├── sql_query.py               # BigQuery SQL generation, schema validation, execution
+│   ├── rag.py                     # hybrid search + reranking + LLM generation
 │   ├── web_fallback.py            # live web search when internal sources
 │   │                                 come up short
 │   └── check_rank.py              # retrieval debugging: where does a known
@@ -192,6 +209,7 @@ safaricom-financial-rag/
 │   │                                 reference answers
 │   ├── curate_ground_truth.py     # dedup + year-stratified sampling
 │   ├── metrics.py                 # Hit Rate, MRR at configurable k
+│   ├── tune_alpha.py              # grid-search RRF keyword/vector weighting
 │   ├── answer_quality.py          # LLM-as-judge against reference answers
 │   ├── check_refusals.py          # separates honest refusals from actual
 │   │                                 wrong answers
@@ -203,7 +221,7 @@ safaricom-financial-rag/
 ├── monitoring/
 │   ├── tracer.py                  # OpenTelemetry + SQLite span exporter
 │   ├── feedback.py                # thumbs up/down capture
-│   ├── conversation_store.py      # persisted chat history
+│   ├── conversation_store.py      # Firestore-backed, session-isolated chat history
 │   └── dashboard.py                # Streamlit feedback dashboard
 ├── ui/
 │   └── app.py                     # Streamlit chat interface
@@ -237,6 +255,21 @@ checks every document's content against its filename-derived label;
 `fix_fiscal_years.py` corrects the ones that disagree, leaving anything
 unverifiable untouched rather than guessing.
 
+**Even after that fix, the `fiscal_year` field itself wasn't spelled
+consistently across the corpus, which stayed hidden until a filtering
+feature actually depended on it.** Different source documents encoded the
+same year differently: `FY_8` and `FY8` both exist for FY2008, `FY_20` and
+`FY20` both exist for FY2020 — an underscore-presence and zero-padding
+inconsistency, not a wrong-year mistake like the five documents above. An
+exact-match filter (fiscal-year-scoped retrieval, added later) would
+silently return zero chunks for whichever spelling it didn't happen to
+check, without erroring — the kind of bug that looks like "no results for
+this year" rather than an obvious crash. `normalize_fiscal_year()`
+collapses every variant to one canonical `FYn` string via `year % 100`
+(handles 1-4 digit input, with or without a leading underscore,
+identically), applied uniformly at load time so retrieval, filtering, and
+the model's own citations always agree on the same spelling.
+
 Because `chunk_id` is a freshly generated UUID on every chunking run,
 correcting an already-processed document's fiscal year meant more than a
 metadata patch: it meant re-chunking (new IDs), re-embedding, purging the
@@ -253,6 +286,18 @@ object wrapping results in `.points` instead of returning them directly. A
 version mismatch, not a logic bug: this only showed up the first time
 hybrid search actually ran against real data.
 
+**Qdrant Cloud enforces a rule a local Qdrant instance doesn't: filtering
+on a payload field requires an explicit index for that field to exist
+first.** Fiscal-year-filtered queries worked fine locally but threw a 400
+("Index required but not found for fiscal_year") the first time the same
+code ran against the deployed app's Qdrant Cloud cluster — same query,
+genuinely different server-enforced behavior between a self-hosted
+instance and the managed Cloud tier. Fixed by creating the payload index
+explicitly (`create_payload_index`, `keyword` type) as part of collection
+setup, so any future delete-and-reseed of the collection — local or
+Cloud — gets it automatically rather than requiring a one-off manual fix
+again.
+
 **Generated SQL failed with "must be qualified with a dataset" on the very
 first real query**, because the LLM was given bare table names in its
 schema context but BigQuery's client needs either a fully-qualified
@@ -264,7 +309,15 @@ four of the seven mart tables named in the original project plan
 `stg_revenue_segments`) turned out not to exist under those names in
 `dbt_rgiggs_mart` at all, confirmed via `bq ls` rather than assumed;
 `sql_query.py`'s schema introspection was trimmed to the three tables that
-actually exist.
+actually exist. A live case of the SQL path substituting a real-but-wrong
+column for one that didn't exist (a total/aggregate figure standing in for
+a question about a specific narrower category) led to two further
+safeguards: a schema-validation guard that rejects any generated SQL
+referencing a table/column not in the live introspected schema, and a
+system-prompt instruction telling the model explicitly not to substitute
+a broader column when the specific one it needs isn't available — the
+schema guard alone doesn't catch that case, since the substituted column
+was real, just the wrong one.
 
 **The headline answer-quality number looked much worse than the system
 actually performed, until refusals were separated from wrong answers.**
@@ -296,7 +349,8 @@ years share near-identical boilerplate phrases (e.g. "Strong financial and
 commercial performance" appears in FY15 through FY18 alike), so questions
 generated from one year's occurrence of common phrasing have no single
 correct year to retrieve, a structural ambiguity in the ground truth
-itself, not a retrieval failure.
+itself, not a retrieval failure. The same boilerplate-reuse pattern shows
+up again at the retrieval-quality level, see Known Limitations below.
 
 ## Evaluation
 
@@ -311,14 +365,31 @@ the evaluation set):
 | 5 | 0.61 | 0.4625 |
 | 10 | 0.696 | 0.4763 |
 
-k=5 matches what the production RAG path actually retrieves.
+k=5 matches what the production RAG path retrieved at the time of this
+table.
 
-**Answer quality**, run through the actual production RAG pipeline over
-the same 500 questions, judged against reference answers: 157 questions
-(31.4%) are honest refusals, the system declining rather than guessing
-when retrieval doesn't surface enough evidence. Of the 343 questions where
-the system attempted an answer, 97.1% were judged at least partially
-correct and 48.7% fully correct, with only 2.9% genuinely wrong.
+**RRF fusion weighting was tuned and confirmed separately**, using the
+full 6,219-row raw ground truth set (pre-curation, larger and noisier than
+the 500-question benchmark above) at k=20 — matching the width of the
+candidate pool retrieval actually hands to the reranker in production.
+Grid-searching keyword-vs-vector weight (`alpha`) across
+`{0.3, 0.4, 0.5, 0.6, 0.7}` found **alpha=0.6 best on both Hit Rate@20
+(0.7086) and MRR (0.4354)**, narrowly ahead of the previous unweighted 0.5
+default; 0.3 and 0.4 were clearly worse and ruled out. This is now the
+default in `hybrid_search()`. Cross-encoder reranking (top-20 candidates
+narrowed to top-10 by relevance, immediately before generation) was added
+afterward and does not yet have its own dedicated before/after evaluation
+run — noted here as an honest gap, not yet claimed as measured.
+
+**Answer quality**, run through the production RAG pipeline over the same
+500 questions, judged against reference answers, **prior to this session's
+retrieval changes** (alpha tuning, reranking, fiscal-year filtering): 157
+questions (31.4%) are honest refusals, the system declining rather than
+guessing when retrieval doesn't surface enough evidence. Of the 343
+questions where the system attempted an answer, 97.1% were judged at least
+partially correct and 48.7% fully correct, with only 2.9% genuinely wrong.
+A fresh run against the current pipeline is a known open item, see Known
+Limitations.
 
 **SQL path evaluation and further answer-quality iterations** (a dedicated
 ground truth and accuracy harness for the SQL path, plus several
@@ -338,9 +409,13 @@ finalized.
   those years narratively.
 - SQL generation has occasionally hallucinated column names or produced
   invalid SQL for complex questions (aggregate/window function mismatches
-  in particular). The dedicated SQL evaluation harness exists to
-  systematically find and prioritize these rather than fixing them one at
-  a time as spotted.
+  in particular). A schema-validation guard now rejects references to
+  table/column names that don't exist in the live schema, but it cannot
+  catch a *real* column used for the wrong thing (e.g. an aggregate figure
+  substituted for a missing narrower one) — that failure mode is addressed
+  at the prompt level instead, not fully closed by validation alone. The
+  dedicated SQL evaluation harness exists to systematically find and
+  prioritize these rather than fixing them one at a time as spotted.
 - The web search fallback is intentionally unverified against a primary
   source and says so explicitly in its own answers; treat it as a last
   resort, not a citation-quality source the way the RAG path is.
@@ -348,6 +423,24 @@ finalized.
   `safaricom_rag.chunks` for archival/inspection, but retrieval itself
   still reads from local `embeddings/*.jsonl`, not from that table. The
   BigQuery chunks table is not yet in the runtime retrieval path.
+- The cross-encoder reranker is a generic model (MS-MARCO), not tuned to
+  financial-document language. Several fiscal years' reports reuse
+  near-identical marketing/boilerplate phrasing (a real characteristic of
+  the source filings, not a retrieval bug) that can still occupy multiple
+  slots in the same top-10 candidate set, crowding out more substantive,
+  differently-worded chunks. A diversity-aware reranking step is a
+  plausible future improvement, not yet built or measured against real
+  data.
+- Session identity for conversation history is a random ID carried in the
+  URL, not a real authentication mechanism — it prevents different
+  visitors from *accidentally* sharing one conversation, but a shared or
+  guessed link can still reopen someone else's session. Fine for a
+  personal demo tool, not a substitute for real auth if this were ever a
+  multi-user product.
+
+## Live Demo
+
+Deployed on Google Cloud Run. Public link coming soon.
 
 ## Screenshots
 
@@ -420,6 +513,12 @@ start:
 | `BIGQUERY_DATASET` | Dataset holding the archival `chunks` table |
 | `BIGQUERY_MART_DATASET` | Dataset holding the `mart_*` tables the SQL path queries — these tables themselves come from a separate dbt project, not from secrets alone (see [Data Acquisition](#data-acquisition)) |
 
+**For the deployed (Cloud Run) app specifically**, conversation history
+additionally requires a Firestore database (Native mode) in the same GCP
+project, and the service account needs the `roles/datastore.user` IAM
+role. Not required for local development against the Dockerized/local
+Qdrant setup below unless you want persistent chat history there too.
+
 ## Reproducibility: How to Run
 
 ```bash
@@ -478,4 +577,11 @@ uv run python -m evaluation.ground_truth --chunks "embeddings/*.jsonl" --output 
 uv run python -m evaluation.curate_ground_truth --input evaluation/ground_truth_v1.jsonl --output evaluation/ground_truth_curated_v1.jsonl --target-size 500
 uv run python -m evaluation.metrics --ground-truth evaluation/ground_truth_curated_v1.jsonl --chunks "embeddings/*.jsonl" --k 2 5 10
 uv run python -m evaluation.answer_quality --ground-truth evaluation/ground_truth_curated_v1.jsonl --chunks "embeddings/*.jsonl" --output evaluation/answer_quality_v1.jsonl
+```
+
+**Re-running the RRF alpha sweep** (grid-searches keyword-vs-vector
+weighting; retrieves once per question and reuses that across every alpha
+value rather than repeating retrieval per alpha):
+```bash
+uv run python -m evaluation.tune_alpha --chunks "embeddings/*.jsonl"
 ```
