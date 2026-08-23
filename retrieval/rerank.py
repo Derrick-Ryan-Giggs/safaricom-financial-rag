@@ -16,7 +16,23 @@ Usage pattern (see ui/app.py's run_rag_fallback):
 
 from fastembed.rerank.cross_encoder import TextCrossEncoder
 
+import os
+
 RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"  # ~80MB, confirmed available in fastembed's reranker list
+
+# fastembed defaults to caching downloaded models under the SYSTEM TEMP
+# DIRECTORY (/tmp/fastembed_cache on Linux) unless told otherwise --
+# confirmed via fastembed's own GitHub issues (#569, #681) this is a known,
+# reported problem specifically because temp directories aren't persistent.
+# Inside Docker, /tmp is part of the container's writable layer and gets
+# wiped on every rebuild -- meaning every `docker compose up --build` was
+# very likely re-triggering a fresh ~80-90MB download from Hugging Face on
+# the next reranked question. Pointing this at a stable path (env-overridable,
+# same pattern as QDRANT_HOST etc. elsewhere in this project) fixes it for
+# local dev IF that path is also volume-mounted in docker-compose.yml so it
+# survives rebuilds -- see the deployment note below for why this alone
+# isn't enough for Cloud Run.
+RERANKER_CACHE_DIR = os.environ.get("FASTEMBED_CACHE_DIR", "/app/.fastembed_cache")
 
 _encoder: TextCrossEncoder | None = None
 
@@ -24,13 +40,28 @@ _encoder: TextCrossEncoder | None = None
 def get_reranker() -> TextCrossEncoder:
     """
     Lazy singleton -- loading the ONNX model has real cost (comparable to
-    OnnxEmbedder's own load), so this avoids repeating it per question.
-    Call once at app startup (e.g. inside load_retrieval_stack) if you want
-    the load cost paid upfront rather than on the first question.
+    OnnxEmbedder's own load), so this avoids repeating it per question
+    within one process. Does NOT by itself prevent a re-download across
+    process restarts -- that's what RERANKER_CACHE_DIR being a persistent,
+    non-temp path is for. Call once at app startup (e.g. inside
+    load_retrieval_stack) if you want the load cost paid upfront rather
+    than on the first question.
     """
     global _encoder
     if _encoder is None:
-        _encoder = TextCrossEncoder(model_name=RERANKER_MODEL)
+        os.makedirs(RERANKER_CACHE_DIR, exist_ok=True)
+        already_cached = os.path.isdir(RERANKER_CACHE_DIR) and len(os.listdir(RERANKER_CACHE_DIR)) > 0
+        _encoder = TextCrossEncoder(
+            model_name=RERANKER_MODEL,
+            cache_dir=RERANKER_CACHE_DIR,
+            # Confirmed separate fastembed bug (qdrant/fastembed#218): even
+            # with a populated cache_dir, fastembed still makes a network
+            # call to Hugging Face to check the repo before using cached
+            # files, unless told not to. Once something's actually in the
+            # cache dir, skip that check entirely -- no reason to touch the
+            # network at all for a model that's already on disk.
+            local_files_only=already_cached,
+        )
     return _encoder
 
 

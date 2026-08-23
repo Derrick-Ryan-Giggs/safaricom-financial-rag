@@ -30,6 +30,7 @@ x-app-common: &app-common
     - ./embeddings:/app/embeddings:ro
     - ./models:/app/models
     - monitoring-data:/data
+    - fastembed-cache:/app/.fastembed_cache
   depends_on:
     qdrant:
       condition: service_healthy
@@ -109,3 +110,4 @@ volumes:
   airflow-project-venv:
   qdrant-storage:
   monitoring-data:
+   fastembed-cache:

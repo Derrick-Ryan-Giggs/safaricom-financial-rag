@@ -46,14 +46,26 @@ def _get_connection() -> sqlite3.Connection:
 def _slim_sources(sources: list[dict] | None) -> list[dict]:
     """
     Keep only what render_sources() actually displays (fiscal_year,
-    page_number, text) -- drop the 384-dim embedding vector and other
-    retrieval-internal fields so the persisted conversation doesn't balloon
-    in size for no display benefit.
+    page_number, text, source_file) -- drop the 384-dim embedding vector
+    and other retrieval-internal fields so the persisted conversation
+    doesn't balloon in size for no display benefit.
+
+    source_file is kept (unlike before) so build_source_url() in ui/app.py
+    can still link directly to the source PDF after a page reload -- it
+    was previously dropped here, which meant the link only worked for a
+    message's first render and silently vanished (no source_file to build
+    from) the moment load_messages() reconstructed it from persisted
+    storage.
     """
     if not sources:
         return []
     return [
-        {"fiscal_year": s.get("fiscal_year"), "page_number": s.get("page_number"), "text": s.get("text")}
+        {
+            "fiscal_year": s.get("fiscal_year"),
+            "page_number": s.get("page_number"),
+            "text": s.get("text"),
+            "source_file": s.get("source_file"),
+        }
         for s in sources
     ]
 

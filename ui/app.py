@@ -15,7 +15,9 @@ Usage:
     uv run streamlit run ui/app.py
 """
 
+import re
 import sys
+import urllib.parse
 import uuid
 from pathlib import Path
 
@@ -37,9 +39,41 @@ from monitoring.tracer import get_tracer
 from retrieval.rag import answer_from_chunks, is_refusal, verify_no_answer
 from retrieval.rerank import rerank_chunks
 from retrieval.router import classify_question
-from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks
+from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks, normalize_fiscal_year
 from retrieval.sql_query import SQLGenerationError, format_results, run_query
 from retrieval.web_fallback import web_search_answer
+
+# Matches the RAG_SYSTEM_PROMPT's own citation format, e.g. "(FY10, p.13)".
+CITATION_PATTERN = re.compile(r"\(?\s*(FY\d{1,4})\s*,\s*p\.?\s*(\d+)\s*\)?", re.IGNORECASE)
+
+# Catches literal URLs that survive into chunk text or a generated answer
+# (e.g. "see www.safaricom.co.ke/sustainability" printed in a report body).
+# Separate from the GCS deep-link below, which points at the PDF itself
+# rather than a URL that happens to appear inside it.
+URL_PATTERN = re.compile(r"(https?://[^\s)\]]+|www\.[^\s)\]]+)", re.IGNORECASE)
+
+# CONFIRMED per project history: this GCS bucket was made public-read on the
+# raw/*.pdf prefix specifically so the original filings could be linked to
+# directly. source_file values already include the "raw/" prefix (e.g.
+# "raw/FY_10ResultspresentationAnnualResults.pdf"), so no extra path
+# assembly is needed beyond joining bucket + source_file. NOT YET VERIFIED:
+# that the GCS object key exactly matches source_file's value -- click-test
+# one link after rebuild before trusting all of them.
+GCS_BUCKET_URL = "https://storage.googleapis.com/safaricom-rag"
+
+
+def linkify(text: str) -> str:
+    """
+    Turns literal http(s):// or www. substrings into clickable markdown
+    links. Applied to both source-excerpt previews and generated answers --
+    if a URL survived retrieval into either, it should be clickable rather
+    than plain text the user has to manually copy.
+    """
+    def _wrap(match):
+        url = match.group(0)
+        href = url if url.lower().startswith("http") else f"https://{url}"
+        return f"[{url}]({href})"
+    return URL_PATTERN.sub(_wrap, text)
 
 CHUNKS_GLOB = "embeddings/*.jsonl"
 
@@ -89,8 +123,47 @@ def render_sources(sources):
         return
     with st.expander("Sources"):
         for source in sources:
-            preview = source["text"][:150]
-            st.markdown(f"- **{source['fiscal_year']}, p.{source['page_number']}**: {preview}...")
+            text = source["text"]
+            if len(text) <= 400:
+                preview = text
+            else:
+                preview = text[:400].rsplit(" ", 1)[0] + "..."
+            preview = linkify(preview)
+
+            label = f"{source['fiscal_year']}, p.{source['page_number']}"
+            source_file = source.get("source_file")
+            if source_file:
+                page = source.get("page_number")
+                pdf_url = f"{GCS_BUCKET_URL}/{urllib.parse.quote(source_file, safe='/')}"
+                if page:
+                    pdf_url += f"#page={page}"
+                label = f"[{label}]({pdf_url})"
+
+            st.markdown(f"- **{label}**: {preview}")
+
+
+def filter_cited_sources(answer: str, sources: list[dict]) -> list[dict]:
+    """
+    Narrows the Sources panel down to only the chunks the model actually
+    cited in its answer (matching its own "(FYnn, p.N)" citation format),
+    instead of showing the full 10-chunk retrieved/reranked candidate set
+    regardless of how many the answer actually drew on. Confirmed live: an
+    answer citing exactly one source was shown alongside 10 Sources
+    entries, most of them near-duplicate boilerplate the model never
+    referenced -- this makes "what did it actually use" explicit instead
+    of dumping the whole candidate pool.
+
+    Falls back to the full unfiltered `sources` list if no citations are
+    found at all (e.g. the answer was a refusal, or citation formatting
+    slipped) -- showing everything retrieved is more useful than showing
+    nothing in that case.
+    """
+    cited = {(normalize_fiscal_year(fy), str(int(page))) for fy, page in CITATION_PATTERN.findall(answer)}
+    if not cited:
+        return sources
+
+    matched = [s for s in sources if (s.get("fiscal_year"), str(s.get("page_number"))) in cited]
+    return matched or sources
 
 
 def render_web_sources(web_sources):
@@ -240,6 +313,8 @@ def process_question(question):
                     # to searching the PDF corpus directly (FY08-26, wider and
                     # more complete than the mart tables).
                     rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question)
+                    if not rag_was_refusal:
+                        sources = filter_cited_sources(rag_answer, sources)
                     reason = (
                         "didn't have this"
                         if rows == []
@@ -266,6 +341,7 @@ def process_question(question):
             else:
                 rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question)
                 if not rag_was_refusal:
+                    sources = filter_cited_sources(rag_answer, sources)
                     answer = rag_answer
                 elif web_sources:
                     answer = (
@@ -346,7 +422,7 @@ while i < len(messages):
                     st.rerun()
     else:
         with st.chat_message("assistant"):
-            st.markdown(message["content"])
+            st.markdown(linkify(message["content"]))
             render_generated_sql(message.get("generated_sql"))
             render_sources(message.get("sources"))
             render_web_sources(message.get("web_sources"))

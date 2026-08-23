@@ -38,6 +38,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 ENV UV_HTTP_TIMEOUT=1200
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
+COPY .fastembed_cache /app/.fastembed_cache
 
 COPY . .
 
