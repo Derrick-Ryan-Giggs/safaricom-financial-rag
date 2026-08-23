@@ -97,7 +97,12 @@ st.caption("Ask about Safaricom's financials, M-PESA, or the Kenya/Ethiopia traj
 # a container at the position it was CREATED, not where it's filled, so this is
 # what lets the starter-question buttons appear at the top while still safely
 # calling a function that doesn't exist yet at this point in the script.
-starter_questions_container = st.container()
+#
+# The explicit key gives this container a stable CSS class (st-key-starter_questions)
+# so the button-sizing rule below only ever touches these four buttons -- never the
+# Edit/Save/Cancel buttons or the thumbs feedback buttons rendered elsewhere in the
+# script, which also happen to be st.button calls.
+starter_questions_container = st.container(key="starter_questions")
 
 
 @st.cache_resource
@@ -368,10 +373,35 @@ def process_question(question):
 
 with starter_questions_container:
     st.markdown("**Try asking:**")
+    # Scoped to .st-key-starter_questions (the container key set above), so this
+    # only touches the four starter-question buttons below -- not the Edit,
+    # Save/Cancel, or thumbs-feedback buttons rendered elsewhere in the script.
+    #
+    # Fixed height + line-clamp keeps all four buttons the same size regardless
+    # of how long each question's text is: short questions get vertical padding,
+    # questions too long to fit within 3 lines are truncated with "..." instead
+    # of growing the box. Swap EXAMPLE_QUESTIONS to anything, short or long, and
+    # the containers stay uniform without touching this CSS again.
+    st.markdown(
+        """
+        <style>
+        .st-key-starter_questions .stButton > button {
+            height: 96px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            white-space: normal;
+            text-align: center;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     cols = st.columns(len(EXAMPLE_QUESTIONS))
     for col, example in zip(cols, EXAMPLE_QUESTIONS):
         with col:
-            if st.button(example, key=f"example_{example}"):
+            if st.button(example, key=f"example_{example}", use_container_width=True):
                 # Starter questions start a FRESH conversation, not append to
                 # whatever's already there. clear_all() wipes the persisted
                 # store directly, so the clicked question becomes message #1
