@@ -83,7 +83,7 @@ MART_COVERAGE_NOTE = (
 
 EXAMPLE_QUESTIONS = [
     "What was M-PESA revenue in FY2025?",
-    "What factors drove M-PESA growth?",
+    "What is Zuri",
     "Compare Ethiopia EBIT across FY23 and FY24.",
     "What was Safaricom's overall equity score?",
 ]

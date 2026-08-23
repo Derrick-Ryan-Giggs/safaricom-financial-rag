@@ -110,4 +110,4 @@ volumes:
   airflow-project-venv:
   qdrant-storage:
   monitoring-data:
-   fastembed-cache:
+  fastembed-cache:
