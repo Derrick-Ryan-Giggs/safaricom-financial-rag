@@ -28,7 +28,6 @@
 #
 # --no-sync in CMD stops `uv run` from re-checking/re-downloading at
 # every container start -- it just uses whatever's already in the venv.
-
 FROM python:3.12-slim
 
 RUN pip install --no-cache-dir uv==0.9.25
@@ -40,7 +39,21 @@ ENV UV_HTTP_TIMEOUT=1200
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
 COPY .fastembed_cache /app/.fastembed_cache
 
-COPY . .
+# Explicit copies instead of `COPY . .`. A blanket copy meant ANY file
+# change anywhere in the repo invalidated one giant layer containing
+# source code, ~2,100 embedded chunks, the ONNX embedding model, AND (due
+# to a .dockerignore path mismatch, now fixed) the raw source PDFs -- so a
+# one-line code change re-pushed all of it, every time. Splitting into
+# per-directory layers means each has its own cache: editing ui/app.py
+# only invalidates the ui/ layer, not embeddings/ or models/, which almost
+# never change and are the actual bulk of the image's size.
+COPY config.py main.py ./
+COPY retrieval/ retrieval/
+COPY ui/ ui/
+COPY monitoring/ monitoring/
+COPY ingestion/ ingestion/
+COPY embeddings/ embeddings/
+COPY models/ models/
 
 EXPOSE 8501
 

@@ -9,8 +9,14 @@
 # Bind-mounted at runtime (x-app-common volumes), no need to bake into image
 
 # Raw source PDFs, not needed by the app/dashboard runtime
-data/raw/
-data/processed/
+# CORRECTED: the previous patterns ("data/raw/", "data/processed/") never
+# matched anything -- no data/ directory exists in this repo; the real
+# paths are "raw/" and "processed/" at repo root, which were never
+# actually being excluded until now. Now redundant with the Dockerfile's
+# explicit COPY list (which never references these paths at all), kept
+# as a safety net in case anything ever reverts to a blanket COPY . .
+raw/
+processed/
 
 # Not needed inside the app/dashboard image
 airflow/
