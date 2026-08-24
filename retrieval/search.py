@@ -66,16 +66,44 @@ def extract_fiscal_year(question: str) -> str | None:
     return normalize_fiscal_year(match.group(0))
 
 
+def normalize_source_file(raw: str) -> str:
+    """
+    Collapses source_file down to the clean "raw/<filename>" form the GCS
+    URL builder in ui/app.py expects. CONFIRMED live: at least one chunk
+    (FY2019_Press_Commentary.pdf) has source_file stored as a full local
+    dev-machine absolute path (e.g.
+    "/mnt/storage/Desktop/safaricom-financial-rag/raw/FY2019_Press_
+    Commentary.pdf") instead of "raw/FY2019_Press_Commentary.pdf" --
+    likely from whatever machine/session that specific file was ingested
+    on. Concatenating GCS_BUCKET_URL with an unnormalized absolute path
+    produces a URL pointing at an object that doesn't exist (confirmed:
+    a double-slash followed by the full local path, GCS returning its
+    ambiguous AccessDenied-for-permissions-or-missing-object error).
+
+    Taking just the basename and re-prepending "raw/" is a safe no-op for
+    already-clean values (e.g. "raw/FY_10....pdf" -> basename
+    "FY_10....pdf" -> "raw/FY_10....pdf", unchanged) and a fix for
+    contaminated ones, so this can be applied uniformly to every record
+    without needing to know in advance which ones are actually affected.
+    """
+    filename = raw.rsplit("/", 1)[-1]
+    return f"raw/{filename}"
+
+
 def load_chunks(chunk_glob: str) -> list[dict]:
     """
-    Normalizes each record's fiscal_year in place to the canonical "FYn"
-    form as it's loaded -- see normalize_fiscal_year's docstring for why.
+    Normalizes each record's fiscal_year and source_file in place as it's
+    loaded -- see normalize_fiscal_year's and normalize_source_file's
+    docstrings for why each is needed.
 
     OPERATIONAL NOTE: build_qdrant_client()'s idempotent check only
     compares point COUNT, not payload content -- an existing collection
     won't auto-refresh with normalized values just because this code
-    changed. Delete the collection once after deploying this fix, then
-    the next build_qdrant_client(records) call re-seeds it fresh.
+    changed. Delete the collection (local AND Cloud) after deploying this
+    fix, then the next build_qdrant_client(records) call re-seeds it
+    fresh. Also note: any conversation history already persisted to
+    Firestore before this fix keeps whatever source_file value it was
+    saved with -- only freshly-asked questions get the corrected link.
     """
     records = []
     for path in sorted(glob.glob(chunk_glob)):
@@ -86,6 +114,8 @@ def load_chunks(chunk_glob: str) -> list[dict]:
                     record = json.loads(line)
                     if "fiscal_year" in record:
                         record["fiscal_year"] = normalize_fiscal_year(record["fiscal_year"])
+                    if "source_file" in record:
+                        record["source_file"] = normalize_source_file(record["source_file"])
                     records.append(record)
     return records
 
