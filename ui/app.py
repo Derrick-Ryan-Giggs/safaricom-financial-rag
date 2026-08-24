@@ -140,7 +140,7 @@ if "editing_id" not in st.session_state:
     st.session_state.editing_id = None
 
 
-def render_sources(sources):
+def render_sources(sources, message_id):
     """
     Renders each retrieved source's citation label, a text preview, and (if
     the source has a source_file) a "View source" toggle that embeds the
@@ -156,10 +156,15 @@ def render_sources(sources):
     matters here -- it's what makes the iframe render the PDF instead of
     prompting a download inside the frame itself.
 
-    Each source gets its own toggle keyed on (source_file, page_number,
-    index) so expanding one source's PDF doesn't affect any other's, and
-    the index disambiguates two sources that happen to cite the same
-    fiscal-year/page pair.
+    message_id (the owning message's own unique id) is required, not
+    optional, because this function is called once per assistant message
+    in the render loop below -- CONFIRMED live: without a message-level
+    disambiguator, two DIFFERENT messages that happen to cite the same
+    source at the same list position produced identical button keys
+    (idx alone only disambiguates sources WITHIN one message's own list,
+    not across the whole page's separate render_sources() calls), which
+    Streamlit rejects as a StreamlitDuplicateElementKey since every key on
+    the page must be globally unique, not just unique per function call.
     """
     if not sources:
         return
@@ -184,7 +189,7 @@ def render_sources(sources):
             st.markdown(f"- **{label}**: {preview}")
 
             if pdf_url:
-                view_key = f"view_{source_file}_{page}_{idx}"
+                view_key = f"view_{message_id}_{source_file}_{page}_{idx}"
                 if st.button("View source", key=f"btn_{view_key}"):
                     st.session_state[view_key] = not st.session_state.get(view_key, False)
                 if st.session_state.get(view_key, False):
@@ -498,7 +503,7 @@ while i < len(messages):
         with st.chat_message("assistant"):
             st.markdown(linkify(message["content"]))
             render_generated_sql(message.get("generated_sql"))
-            render_sources(message.get("sources"))
+            render_sources(message.get("sources"), message["id"])
             render_web_sources(message.get("web_sources"))
             render_feedback_buttons(message)
 
