@@ -28,6 +28,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
+import streamlit.components.v1 as components
 from openai import RateLimitError  # sql_query.py's client is OpenAI's SDK pointed at Groq's
                                     # OpenAI-compatible endpoint, so this is the correct
                                     # exception class -- not groq.RateLimitError.
@@ -56,9 +57,16 @@ URL_PATTERN = re.compile(r"(https?://[^\s)\]]+|www\.[^\s)\]]+)", re.IGNORECASE)
 # raw/*.pdf prefix specifically so the original filings could be linked to
 # directly. source_file values already include the "raw/" prefix (e.g.
 # "raw/FY_10ResultspresentationAnnualResults.pdf"), so no extra path
-# assembly is needed beyond joining bucket + source_file. NOT YET VERIFIED:
-# that the GCS object key exactly matches source_file's value -- click-test
-# one link after rebuild before trusting all of them.
+# assembly is needed beyond joining bucket + source_file.
+#
+# CONFIRMED (Aug 2026): a plain <a href> to this URL triggers a full-page
+# navigation, and mobile/desktop Chrome's "download PDFs instead of opening"
+# profile setting intercepts that navigation regardless of the object's
+# Content-Disposition: inline metadata (which is correct and unrelated --
+# verified via gsutil stat). That setting does not apply to a PDF rendered
+# inside an iframe on a page we control, since no navigation occurs -- so
+# render_sources() below embeds the PDF via components.iframe instead of
+# linking out to it. See render_sources().
 GCS_BUCKET_URL = "https://storage.googleapis.com/safaricom-rag"
 
 
@@ -133,10 +141,30 @@ if "editing_id" not in st.session_state:
 
 
 def render_sources(sources):
+    """
+    Renders each retrieved source's citation label, a text preview, and (if
+    the source has a source_file) a "View source" toggle that embeds the
+    original PDF inline via components.iframe -- rather than a plain
+    markdown link out to the GCS URL.
+
+    Why an iframe instead of a link: a plain <a href> to the GCS PDF is a
+    full-page navigation, and Chrome's (mobile and desktop) "download PDFs
+    instead of opening" setting intercepts that navigation regardless of
+    the object's Content-Disposition: inline metadata. An iframe embedded
+    PDF isn't a navigation, so that browser setting never gets a chance to
+    intervene. The bucket's Content-Disposition: inline metadata still
+    matters here -- it's what makes the iframe render the PDF instead of
+    prompting a download inside the frame itself.
+
+    Each source gets its own toggle keyed on (source_file, page_number,
+    index) so expanding one source's PDF doesn't affect any other's, and
+    the index disambiguates two sources that happen to cite the same
+    fiscal-year/page pair.
+    """
     if not sources:
         return
     with st.expander("Sources"):
-        for source in sources:
+        for idx, source in enumerate(sources):
             text = source["text"]
             if len(text) <= 400:
                 preview = text
@@ -146,14 +174,21 @@ def render_sources(sources):
 
             label = f"{source['fiscal_year']}, p.{source['page_number']}"
             source_file = source.get("source_file")
+            page = source.get("page_number")
+            pdf_url = None
             if source_file:
-                page = source.get("page_number")
                 pdf_url = f"{GCS_BUCKET_URL}/{urllib.parse.quote(source_file, safe='/')}"
                 if page:
                     pdf_url += f"#page={page}"
-                label = f"[{label}]({pdf_url})"
 
             st.markdown(f"- **{label}**: {preview}")
+
+            if pdf_url:
+                view_key = f"view_{source_file}_{page}_{idx}"
+                if st.button("View source", key=f"btn_{view_key}"):
+                    st.session_state[view_key] = not st.session_state.get(view_key, False)
+                if st.session_state.get(view_key, False):
+                    components.iframe(pdf_url, height=500, scrolling=True)
 
 
 def filter_cited_sources(answer: str, sources: list[dict]) -> list[dict]:
