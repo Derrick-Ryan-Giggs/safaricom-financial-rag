@@ -49,6 +49,27 @@ def is_refusal(generated_answer: str) -> bool:
 # over what the chunk's text actually says (an FY22 report excerpt can
 # state an FY20 number directly, e.g. in a year-over-year table). The two
 # new paragraphs below address those two patterns specifically.
+# Confirmed bug (see evaluation/answer_quality_v1.jsonl, e.g. chunk_id
+# b13467f2 and 8af6bdc6): the model sometimes retrieves a chunk that
+# directly answers the question, then refuses anyway -- either because it
+# wants a raw baseline number to compute a delta itself when the excerpt
+# already states the change directly ("increased by 24%" IS the answer to
+# "how did it change"), or because it trusts a chunk's source-report label
+# over what the chunk's text actually says (an FY22 report excerpt can
+# state an FY20 number directly, e.g. in a year-over-year table). The two
+# paragraphs below address those two patterns specifically.
+#
+# Fourth paragraph added after evaluation/answer_quality_v4.jsonl (chunk_id
+# 580c2810-ca27-400d-8e50-1878b52db81e, "What was the net taxation payable
+# in FY23?"): the opposite failure mode from the other three -- instead of
+# refusing despite evidence, the model answered confidently from a
+# cash-flow-statement excerpt where PDF extraction had separated line-item
+# labels from their numeric values, and picked a number (160,352.0, most
+# likely "Operating cash flow") that was never actually paired with the
+# label being asked about. The true "Net taxation payable" value wasn't
+# even present in the excerpt. Placed after the "only refuse if nothing
+# answers it" line, as an explicit exception to it -- otherwise that line's
+# push toward finding an answer could override this one.
 RAG_SYSTEM_PROMPT = """You answer questions about Safaricom's financial history using ONLY the
 provided excerpts from annual reports. Cite the fiscal year and page number for each claim,
 e.g. (FY19, p.3). If the excerpts don't contain enough information to answer, say so directly
@@ -67,6 +88,19 @@ change is a complete answer, not an incomplete one.
 
 Only say the excerpts don't contain enough information if none of them state a figure, change,
 or fact that actually answers the question being asked.
+
+One exception to the above: some excerpts are financial tables where PDF extraction has
+separated row labels from their numeric values -- a run of line-item names (e.g. "Operating
+free cash flow, Net Interest paid/received, Net taxation payable") followed by a separate run
+of numbers, with no label restated next to each one. Do not assume the number positioned
+nearest a label, or the first number after the label list, is that label's value -- extraction
+order does not reliably preserve which number belongs to which row, especially when the count
+of numbers doesn't clearly match the count of labels. Only state a figure for a specific line
+item when the excerpt makes the pairing explicit (e.g. "Net taxation payable was 45,017.6", or
+the label sits immediately next to its number with nothing else between them). If a table
+excerpt separates labels from values like this and you cannot confidently tell which number
+belongs to the item being asked about, that counts as the excerpts not containing enough
+information -- say so rather than citing the nearest number.
 """
 
 # This is a THIRD confirmed instance of the refusal-despite-evidence bug
