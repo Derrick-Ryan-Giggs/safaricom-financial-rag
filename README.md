@@ -354,10 +354,12 @@ up again at the retrieval-quality level, see Known Limitations below.
 
 ## Evaluation
 
-**Retrieval** (Hit Rate / MRR against a 500-question benchmark, curated
-from 6,222 candidates and stratified across all 19 fiscal years so no
-single year, particularly the more document-heavy later ones, dominates
-the evaluation set):
+**Retrieval** (Hit Rate / MRR). Two benchmarks exist so far, not directly
+comparable to each other — see note below:
+
+*500-question benchmark (`ground_truth_curated_v1.jsonl`, curated from
+6,222 candidates, stratified across all 19 fiscal years), pre-tuning
+default weighting:*
 
 | k | Hit Rate | MRR |
 |---|---|---|
@@ -365,31 +367,78 @@ the evaluation set):
 | 5 | 0.61 | 0.4625 |
 | 10 | 0.696 | 0.4763 |
 
-k=5 matches what the production RAG path retrieved at the time of this
-table.
+*1,000-question benchmark (`ground_truth_curated_v2.jsonl`, same
+year-stratified curation process at a larger target size), α=0.6 (current
+default):*
+
+| k | Hit Rate | MRR |
+|---|---|---|
+| 2 | 0.454 | 0.402 |
+| 5 | 0.572 | 0.4362 |
+| 10 | 0.652 | 0.4486 |
+
+k=10 corresponds to how many chunks are actually passed to generation
+post-rerank in production (`num_results=10` default) — not k=5 as an
+earlier version of this table said, which was written before reranking
+existed.
+
+The second benchmark's numbers are lower than the first's across every k.
+This is **not** read as "alpha tuning or reranking made retrieval worse"
+— the two runs differ in benchmark size and (likely) composition, not
+just in pipeline config, and `curated_v1.jsonl` no longer exists in this
+repo to re-run for a clean controlled comparison. A true before/after on
+the *same* question set is a known gap, not something these two tables
+answer.
 
 **RRF fusion weighting was tuned and confirmed separately**, using the
 full 6,219-row raw ground truth set (pre-curation, larger and noisier than
-the 500-question benchmark above) at k=20 — matching the width of the
-candidate pool retrieval actually hands to the reranker in production.
+either benchmark above) at k=20 — matching the width of the candidate
+pool retrieval actually hands to the reranker in production.
 Grid-searching keyword-vs-vector weight (`alpha`) across
 `{0.3, 0.4, 0.5, 0.6, 0.7}` found **alpha=0.6 best on both Hit Rate@20
 (0.7086) and MRR (0.4354)**, narrowly ahead of the previous unweighted 0.5
 default; 0.3 and 0.4 were clearly worse and ruled out. This is now the
-default in `hybrid_search()`. Cross-encoder reranking (top-20 candidates
-narrowed to top-10 by relevance, immediately before generation) was added
-afterward and does not yet have its own dedicated before/after evaluation
-run — noted here as an honest gap, not yet claimed as measured.
+default in `hybrid_search()`.
+
+**Candidate-pool ceiling**: running the 1,000-question benchmark at wider
+k values shows Hit Rate still climbing well past production's actual
+candidate width — 0.652 at k=10, 0.747 at k=30, 0.771 at k=40, 0.782 at
+k=50 — while MRR is essentially flat over the same range (0.4486 → 0.4552).
+This isn't a sign the wider-k results are somehow "wrong": MRR only
+rewards *how early* a correct chunk appears, so a hit newly found at
+rank 35 contributes almost nothing (`1/35`) to an average already near
+0.45, even though it's a real hit. Reranking can only reorder whatever
+`hybrid_search()`'s candidate pool already contains (`num_results*2=20`
+by default) — it cannot retrieve a chunk that never made that pool. The
+gap between Hit Rate@10 (0.652) and Hit Rate@30 (0.747) suggests a real
+share of questions have their correct chunk sitting just outside the
+current 20-candidate window, a ceiling reranking alone cannot fix. Hit
+Rate@20 specifically wasn't measured — a cheap, useful next run — before
+deciding whether widening `num_results` (e.g. 10→15, a 30-candidate pool)
+is worth the added reranking cost.
 
 **Answer quality**, run through the production RAG pipeline over the same
-500 questions, judged against reference answers, **prior to this session's
-retrieval changes** (alpha tuning, reranking, fiscal-year filtering): 157
-questions (31.4%) are honest refusals, the system declining rather than
-guessing when retrieval doesn't surface enough evidence. Of the 343
-questions where the system attempted an answer, 97.1% were judged at least
-partially correct and 48.7% fully correct, with only 2.9% genuinely wrong.
-A fresh run against the current pipeline is a known open item, see Known
-Limitations.
+500 questions, judged against reference answers, **prior to this
+session's retrieval changes** (alpha tuning, reranking, fiscal-year
+filtering): 157 questions (31.4%) are honest refusals, the system
+declining rather than guessing when retrieval doesn't surface enough
+evidence. Of the 343 questions where the system attempted an answer,
+97.1% were judged at least partially correct and 48.7% fully correct,
+with only 2.9% genuinely wrong.
+
+A fresh run against the current pipeline (`evaluation/answer_quality_v4.jsonl`,
+1,000-question `curated_v2` set) is in progress. Mid-run it surfaced a new
+failure mode not present in the original three: for "What was the net
+taxation payable in FY23?" (chunk `580c2810-ca27-400d-8e50-1878b52db81e`),
+the model confidently cited a number (160,352.0) that almost certainly
+belongs to a different line item entirely — the source excerpt is a
+cash-flow-statement table where PDF extraction separated row labels from
+their numeric values, and none of the numbers actually present in that
+excerpt are anywhere near the correct figure. `RAG_SYSTEM_PROMPT` was
+tightened to treat an ambiguous label-to-value pairing the same as "not
+enough information" rather than guessing the nearest number. Full
+pre/post accuracy numbers against this baseline to follow once the v4 run
+completes.
 
 **SQL path evaluation and further answer-quality iterations** (a dedicated
 ground truth and accuracy harness for the SQL path, plus several
@@ -431,6 +480,19 @@ finalized.
   differently-worded chunks. A diversity-aware reranking step is a
   plausible future improvement, not yet built or measured against real
   data.
+- The pre-rerank candidate pool (top-20) appears to be a real recall
+  ceiling, not just the reranker's own limitation — see the
+  candidate-pool-ceiling note under Evaluation. Widening it is untested.
+- PDF table extraction can separate a table's row labels from its numeric
+  values when flattened to text, losing which number belongs to which
+  line item (confirmed live for at least one cash-flow-statement excerpt,
+  chunk `580c2810-ca27-400d-8e50-1878b52db81e`). `RAG_SYSTEM_PROMPT` now
+  instructs the model to treat an ambiguous pairing as insufficient
+  information rather than guess, but the underlying extraction issue
+  itself is unfixed — worth checking whether other cash-flow tables in
+  the corpus show the same pattern before deciding whether to re-extract
+  with a table-aware method (e.g. pdfplumber's table mode) for that
+  document class.
 - Session identity for conversation history is a random ID carried in the
   URL, not a real authentication mechanism — it prevents different
   visitors from *accidentally* sharing one conversation, but a shared or
