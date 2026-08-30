@@ -502,7 +502,7 @@ finalized.
 
 ## Live Demo
 
-Deployed on Google Cloud Run. Public link coming soon.
+Deployed on Google Cloud Run: [rag-app-1003744998459.africa-south1.run.app](https://rag-app-1003744998459.africa-south1.run.app/)
 
 ## Screenshots
 
