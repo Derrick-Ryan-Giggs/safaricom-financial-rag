@@ -16,3 +16,5 @@ build.log
 *.bak
 *.jsonl
 .fastembed_cache/
+
+.bruin.yml
