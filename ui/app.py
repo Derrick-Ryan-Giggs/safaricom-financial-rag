@@ -34,10 +34,10 @@ from openai import RateLimitError  # sql_query.py's client is OpenAI's SDK point
                                     # exception class -- not groq.RateLimitError.
 
 from ingestion.embed import OnnxEmbedder
-from monitoring.conversation_store import clear_all, load_messages, save_message, truncate_from
+from monitoring.conversation_store import MAX_QUESTIONS_PER_HOUR, check_rate_limit, clear_all, load_messages, save_message, truncate_from
 from monitoring.feedback import record_feedback
 from monitoring.tracer import get_tracer
-from retrieval.rag import answer_from_chunks, is_refusal, verify_no_answer
+from retrieval.rag import answer_from_chunks, answer_from_chunks_stream, is_refusal, verify_no_answer
 from retrieval.rerank import rerank_chunks
 from retrieval.router import classify_question
 from retrieval.search import build_minsearch_index, build_qdrant_client, hybrid_search, load_chunks, normalize_fiscal_year
@@ -68,6 +68,10 @@ URL_PATTERN = re.compile(r"(https?://[^\s)\]]+|www\.[^\s)\]]+)", re.IGNORECASE)
 # render_sources() below embeds the PDF via components.iframe instead of
 # linking out to it. See render_sources().
 GCS_BUCKET_URL = "https://storage.googleapis.com/safaricom-rag"
+
+# Guards against oversized junk input reaching the router/generation step at
+# all -- rag-app is public and unauthenticated, so nothing else stops this.
+MAX_QUESTION_LENGTH = 500
 
 
 def linkify(text: str) -> str:
@@ -256,7 +260,7 @@ def render_feedback_buttons(message):
             st.toast("Thanks -- noted.")
 
 
-def run_rag_fallback(question):
+def run_rag_fallback(question, stream: bool = False):
     """
     Search the full FY08-26 PDF corpus (jsonl chunks) directly. Retrieves a
     wider top-20 RRF-fused candidate set via ONE hybrid_search call, then
@@ -272,10 +276,38 @@ def run_rag_fallback(question):
     contradictory back-to-back sentences like "here's what the reports
     say" immediately followed by the model's own "the reports don't have
     this" refusal text.
+
+    stream=True renders the primary generation pass live via
+    st.write_stream(), in its own st.chat_message bubble, as it's produced
+    -- used only by the direct RAG route (not the SQL-empty-result
+    fallback caller below), since that's the common case roadmap item 4
+    targets ("especially on the 120b model's RAG answers"). The
+    SQL-fallback caller keeps stream=False: its eventual answer gets a
+    prefix ("The structured financial tables ... Here's what the annual
+    reports say instead:") composed around rag_answer AFTER this returns,
+    so live-streaming just the inner part there would show the raw
+    generation first and a mismatched prefix appear in front of it only on
+    the next rerun. Not attempted here -- worth revisiting if that path's
+    latency becomes the complaint too.
+
+    One trade-off worth knowing about either way: if a refusal gets
+    corrected by verify_no_answer(), or falls through to a web search
+    instead, the corrected/replacement text differs from whatever was
+    already streamed on screen for this same question. That resolves
+    itself cleanly on the st.rerun() that follows process_question()
+    either way (it always re-renders from the final, correct
+    st.session_state.messages), but the live view can briefly show the
+    wrong text before that happens.
     """
     candidates = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=20)
     sources = rerank_chunks(question, candidates, top_n=10)
-    rag_answer = answer_from_chunks(question, sources)
+
+    if stream:
+        with st.chat_message("assistant"):
+            rag_answer = st.write_stream(answer_from_chunks_stream(question, sources))
+    else:
+        rag_answer = answer_from_chunks(question, sources)
+
     rag_was_refusal = is_refusal(rag_answer)
 
     if rag_was_refusal:
@@ -311,6 +343,23 @@ def process_question(question):
         "role": "user",
         "content": question,
     }
+
+    # Both guards run before anything is persisted or sent to an LLM/BigQuery
+    # -- an oversized or rate-limited question should never reach either.
+    if len(question) > MAX_QUESTION_LENGTH:
+        st.warning(
+            f"That question is too long ({len(question)} characters, max "
+            f"{MAX_QUESTION_LENGTH}). Please shorten it and try again."
+        )
+        return
+
+    if not check_rate_limit(SESSION_ID):
+        st.warning(
+            f"You've hit the limit of {MAX_QUESTIONS_PER_HOUR} questions per hour for this "
+            "session. Please try again later."
+        )
+        return
+
     user_message["seq"] = save_message(user_message, SESSION_ID)
     st.session_state.messages.append(user_message)
 
@@ -393,7 +442,7 @@ def process_question(question):
                             f"answer to this."
                         )
             else:
-                rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question)
+                rag_answer, rag_was_refusal, web_answer, sources, web_sources = run_rag_fallback(question, stream=True)
                 if not rag_was_refusal:
                     sources = filter_cited_sources(rag_answer, sources)
                     answer = rag_answer

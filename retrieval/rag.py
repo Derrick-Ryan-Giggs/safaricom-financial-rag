@@ -193,6 +193,40 @@ def answer_from_chunks(question: str, chunks: list[dict]) -> str:
     return response.choices[0].message.content
 
 
+def answer_from_chunks_stream(question: str, chunks: list[dict]):
+    """
+    Streaming counterpart to answer_from_chunks(), for ui/app.py's chat
+    rendering via st.write_stream() -- generation is the slowest-feeling
+    part of a RAG answer, especially on the 120b model, and this lets the
+    UI show tokens as they arrive instead of a blank spinner until the
+    whole response is ready.
+
+    Not a replacement for answer_from_chunks(): evaluation/answer_quality.py
+    and any caller that needs the complete string back in one call (rather
+    than rendering it live) should keep using answer_from_chunks(). Both
+    build the identical prompt via build_prompt(), so this isn't a second
+    diverging code path -- just a different way of consuming the same call.
+
+    Yields text deltas (str), not full-text-so-far snapshots -- matches
+    what st.write_stream() expects, since it concatenates each piece itself.
+    """
+    prompt = build_prompt(question, chunks)
+    client = OpenAI(api_key=config.GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
+    stream = client.chat.completions.create(
+        model=config.LLM_MODEL,
+        messages=[
+            {"role": "system", "content": RAG_SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.2,
+        stream=True,
+    )
+    for event in stream:
+        delta = event.choices[0].delta.content
+        if delta:
+            yield delta
+
+
 def answer_question(
     question: str,
     records: list[dict],

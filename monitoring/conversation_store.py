@@ -52,6 +52,11 @@ import config
 COLLECTION = "conversation_messages"
 COUNTER_DOC_ID = "conversation_seq"
 
+# Crude per-session cap per roadmap item 3 -- rag-app is public and
+# unauthenticated with nothing else stopping repeated Groq/BigQuery usage
+# from one session. Not tuned against real traffic, just a starting point.
+MAX_QUESTIONS_PER_HOUR = 30
+
 _db: firestore.Client | None = None
 
 
@@ -196,3 +201,39 @@ def clear_all(session_id: str) -> None:
     """Wipe this session's conversation only -- other sessions are untouched."""
     db = _get_client()
     _delete_matching(db.collection(COLLECTION).where("session_id", "==", session_id))
+
+
+def check_rate_limit(session_id: str) -> bool:
+    """
+    Returns True if this session can ask another question this hour, False
+    if it's already at MAX_QUESTIONS_PER_HOUR. Increments the counter as a
+    side effect -- call this once per incoming question, BEFORE running
+    classify/SQL/RAG, so a rejected question never reaches the LLM or
+    BigQuery.
+
+    Keyed by session_id + the current UTC hour, so the cap resets on its
+    own every hour with no cleanup job needed -- old hour-bucket documents
+    are just abandoned, not deleted. Fine at this traffic level; if that
+    ever matters, a Firestore TTL policy on `expires_at` handles it:
+        gcloud firestore fields ttls update expires_at \\
+            --collection-group=rate_limits --enable-ttl \\
+            --project=safaricom-intelligence
+    """
+    hour_bucket = int(time.time() // 3600)
+    doc_ref = _get_client().collection("rate_limits").document(f"{session_id}_{hour_bucket}")
+
+    @firestore.transactional
+    def _check_and_increment(transaction, ref):
+        snapshot = ref.get(transaction=transaction)
+        current = snapshot.get("count") if snapshot.exists else 0
+        if current >= MAX_QUESTIONS_PER_HOUR:
+            return False
+        transaction.set(ref, {
+            "count": current + 1,
+            "session_id": session_id,
+            "hour_bucket": hour_bucket,
+            "expires_at": time.time() + 7200,  # 2hr buffer past the hour it belongs to
+        })
+        return True
+
+    return _check_and_increment(_get_client().transaction(), doc_ref)
