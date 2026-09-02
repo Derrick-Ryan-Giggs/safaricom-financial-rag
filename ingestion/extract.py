@@ -19,9 +19,17 @@ import json
 import re
 import unicodedata
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
-from unstructured.partition.pdf import partition_pdf
+# NOTE: `from unstructured.partition.pdf import partition_pdf` is intentionally
+# NOT imported at module level -- it pulls in torch (the optional `extract`
+# dependency group), which is heavy and shouldn't be a prerequisite just to
+# import this module for its pure functions (table_element_to_text,
+# clean_text, normalize_fiscal_year's sibling extract_fiscal_year, etc). It's
+# imported lazily inside extract_pdf_elements() instead, right where it's
+# actually used -- see tests/test_extract.py, which imports this module
+# without the `extract` extra installed at all.
 
 # Categories to keep -- everything else (Header, Footer, PageBreak, etc.) is
 # treated as noise and dropped.
@@ -115,6 +123,94 @@ def clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", normalized).strip()
 
 
+class _TableRowExtractor(HTMLParser):
+    """
+    Pulls cell text out of an unstructured `text_as_html` table, one list of
+    cell strings per <tr>. Deliberately not a general HTML-to-text tool --
+    only tracks table row/cell boundaries, which is all table_element_to_text
+    needs.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.rows: list[list[str]] = []
+        self._current_row: list[str] | None = None
+        self._current_cell: list[str] | None = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "tr":
+            self._current_row = []
+        elif tag in ("td", "th"):
+            self._current_cell = []
+
+    def handle_endtag(self, tag):
+        if tag == "tr" and self._current_row is not None:
+            self.rows.append(self._current_row)
+            self._current_row = None
+        elif tag in ("td", "th") and self._current_cell is not None:
+            if self._current_row is not None:
+                self._current_row.append("".join(self._current_cell))
+            self._current_cell = None
+
+    def handle_data(self, data):
+        if self._current_cell is not None:
+            self._current_cell.append(data)
+
+
+def table_element_to_text(raw_text: str, text_as_html: str | None) -> str:
+    """
+    CONFIRMED live bug (evaluation/answer_quality_v4.jsonl, chunk_id
+    580c2810-ca27-400d-8e50-1878b52db81e, "What was the net taxation payable
+    in FY23?"): unstructured's flattened `element.text` for a Table element
+    concatenates cell text in raw reading order, which for at least this
+    cash-flow-statement table produced a run of line-item labels ("Operating
+    free cash flow, Net Interest paid/received, Net taxation payable...")
+    followed by a SEPARATE run of numbers, with no pairing between a given
+    label and its value. The model picked a number that was never actually
+    associated with the label being asked about.
+
+    This rebuilds table text from `text_as_html` instead (unstructured
+    populates this for Table elements when hi_res table structure inference
+    succeeds), which preserves real row structure -- each row's cells joined
+    with " | ", one row per line, so "Operating free cash flow | 45,017.6"
+    stays paired regardless of how many other rows or columns surround it.
+
+    Falls back to clean_text(raw_text) -- the exact old behavior -- when
+    `text_as_html` is missing (not every element has it) or doesn't parse
+    into any complete rows (e.g. table structure inference failed on that
+    specific page). A degraded-but-correct fallback, not a crash.
+
+    This complements, not replaces, RAG_SYSTEM_PROMPT's existing guidance in
+    retrieval/rag.py about not trusting extraction order for tables -- even
+    a well-paired row can still be genuinely ambiguous in context, so that
+    prompt instruction stays regardless of this fix.
+    """
+    if not text_as_html:
+        return clean_text(raw_text)
+
+    parser = _TableRowExtractor()
+    try:
+        parser.feed(text_as_html)
+    except Exception:
+        return clean_text(raw_text)
+
+    lines = []
+    for row in parser.rows:
+        cells = [cleaned for cell in row if (cleaned := clean_text(cell))]
+        if cells:
+            lines.append(" | ".join(cells))
+
+    if not lines:
+        return clean_text(raw_text)
+
+    # Deliberately NOT routed through clean_text() as a whole here -- that
+    # would collapse the newlines separating rows back into one run-on line,
+    # reintroducing exactly the label/value separation this function exists
+    # to fix. Each cell is already cleaned individually above; only the
+    # inter-row newlines need to survive past this point.
+    return "\n".join(lines)
+
+
 def extract_pdf_elements(pdf_path: str, gcs_raw_uri: str | None = None) -> list[dict]:
     """
     Run unstructured's hi_res partition on a single PDF and return a list of
@@ -123,6 +219,8 @@ def extract_pdf_elements(pdf_path: str, gcs_raw_uri: str | None = None) -> list[
     pdf_path_obj = Path(pdf_path)
     if not pdf_path_obj.exists():
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
+
+    from unstructured.partition.pdf import partition_pdf  # deferred -- see module-level note
 
     source_id = compute_source_id(pdf_path)
     fiscal_year = extract_fiscal_year(pdf_path)
@@ -144,7 +242,13 @@ def extract_pdf_elements(pdf_path: str, gcs_raw_uri: str | None = None) -> list[
             continue
 
         raw_text = element.text or ""
-        text = clean_text(raw_text)
+        if category == "Table":
+            # Preserve row/label pairing -- see table_element_to_text's
+            # docstring for the confirmed bug this avoids.
+            html = getattr(element.metadata, "text_as_html", None) if element.metadata else None
+            text = table_element_to_text(raw_text, html)
+        else:
+            text = clean_text(raw_text)
         if len(text) < MIN_CHARS:
             continue
 

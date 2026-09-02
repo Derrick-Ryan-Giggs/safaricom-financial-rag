@@ -17,6 +17,7 @@ Usage pattern (see ui/app.py's run_rag_fallback):
 from fastembed.rerank.cross_encoder import TextCrossEncoder
 
 import os
+from pathlib import Path
 
 RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"  # ~80MB, confirmed available in fastembed's reranker list
 
@@ -32,7 +33,16 @@ RERANKER_MODEL = "Xenova/ms-marco-MiniLM-L-6-v2"  # ~80MB, confirmed available i
 # local dev IF that path is also volume-mounted in docker-compose.yml so it
 # survives rebuilds -- see the deployment note below for why this alone
 # isn't enough for Cloud Run.
-RERANKER_CACHE_DIR = os.environ.get("FASTEMBED_CACHE_DIR", "/app/.fastembed_cache")
+#
+# Default changed from the hardcoded "/app/.fastembed_cache" (Docker-only --
+# nothing at /app on a bare local `uv run` outside a container) to a
+# repo-relative path, so this works out of the box in both places without
+# needing FASTEMBED_CACHE_DIR set at all. The env var override still wins
+# when set (e.g. Cloud Run, where a mounted volume or a different path is
+# needed instead).
+RERANKER_CACHE_DIR = os.environ.get(
+    "FASTEMBED_CACHE_DIR", str(Path(__file__).parent.parent / ".fastembed_cache")
+)
 
 _encoder: TextCrossEncoder | None = None
 
