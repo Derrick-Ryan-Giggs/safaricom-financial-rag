@@ -426,19 +426,43 @@ evidence. Of the 343 questions where the system attempted an answer,
 97.1% were judged at least partially correct and 48.7% fully correct,
 with only 2.9% genuinely wrong.
 
-A fresh run against the current pipeline (`evaluation/answer_quality_v4.jsonl`,
-1,000-question `curated_v2` set) is in progress. Mid-run it surfaced a new
-failure mode not present in the original three: for "What was the net
-taxation payable in FY23?" (chunk `580c2810-ca27-400d-8e50-1878b52db81e`),
-the model confidently cited a number (160,352.0) that almost certainly
-belongs to a different line item entirely — the source excerpt is a
-cash-flow-statement table where PDF extraction separated row labels from
-their numeric values, and none of the numbers actually present in that
-excerpt are anywhere near the correct figure. `RAG_SYSTEM_PROMPT` was
-tightened to treat an ambiguous label-to-value pairing the same as "not
-enough information" rather than guessing the nearest number. Full
-pre/post accuracy numbers against this baseline to follow once the v4 run
-completes.
+A later run against the current pipeline (`evaluation/answer_quality_v4.jsonl`,
+1,000-question `curated_v2` set) surfaced a new failure mode not present in
+the original run above: for "What was the net taxation payable in FY23?"
+(chunk `580c2810-ca27-400d-8e50-1878b52db81e`), the model confidently cited
+a number (160,352.0) that almost certainly belongs to a different line
+item entirely — the source excerpt is a cash-flow-statement table where
+PDF extraction separated row labels from their numeric values, and none of
+the numbers actually present in that excerpt are anywhere near the correct
+figure. `RAG_SYSTEM_PROMPT` was tightened to treat an ambiguous
+label-to-value pairing the same as "not enough information" rather than
+guessing the nearest number.
+
+That run's final numbers, over all 1,000 questions:
+
+| Metric | Value |
+|---|---|
+| Refusal rate | 12.0% (120/1,000) |
+| Attempted | 880/1,000 |
+| Relevant | 72.0% (634/880) |
+| Partly relevant | 2.6% (23/880) |
+| Not relevant | 22.0% (194/880) |
+| Unknown (judge couldn't verdict) | 3.3% (29/880) |
+| Relevant or partly relevant (combined) | 74.7% (657/880) |
+
+**Not a clean before/after against the 97.1%/48.7% figures above.** This
+run differs from the original in benchmark size (1,000 vs. 500 questions),
+question set (`curated_v2` vs. `curated_v1`), and pipeline state (alpha
+tuning, reranking, fiscal-year filtering, and the table-extraction prompt
+fix are all present here and weren't in the original run) — same caveat
+as the two retrieval benchmarks above, and for the same reason: too many
+variables changed at once to attribute the difference to any one of them.
+Read narrowly, not causally: refusal rate is markedly lower (12.0% vs.
+31.4%) and the not-relevant share is markedly higher (22.0% vs. 2.9%) than
+the original run. Worth a controlled re-run of the original 500-question
+set against the current pipeline before concluding either shift reflects
+a real regression or improvement rather than benchmark-composition
+differences.
 
 **SQL path evaluation and further answer-quality iterations** (a dedicated
 ground truth and accuracy harness for the SQL path, plus several
