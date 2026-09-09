@@ -55,6 +55,29 @@ COPY ingestion/ ingestion/
 COPY embeddings/ embeddings/
 COPY models/ models/
 
+# Runs as a dedicated non-root user rather than the python:3.12-slim
+# default of root -- doesn't change app behavior, just removes a layer of
+# defense-in-depth loss if a dependency vulnerability ever did allow code
+# execution inside the container. UID 1000 is arbitrary but common; the
+# bind-mounted ./models (docker-compose.yml's x-app-common volumes) needs
+# to be READABLE by this UID at runtime -- check with `ls -ln models/` on
+# the host (the number right after the permission string is the owning
+# UID). If it's not 1000, either `chmod -R o+rX models/` on the host, or
+# change the 1000 below to match `id -u` on your host user instead.
+# (./embeddings is mounted :ro and world-readable by default, not affected.)
+#
+# `-m -d /home/appuser` + explicit HOME: without a real home directory,
+# HOME stays inherited as /root after switching users -- appuser can't
+# write there, and both `uv` (its own cache/state dir) and Streamlit
+# itself (writes ~/.streamlit/ on first launch, for its telemetry-consent
+# config) need a writable HOME to start at all. This was the actual cause
+# of the permission errors from switching to non-root earlier -- not a uv
+# cache-mount issue, a missing/unwritable HOME.
+RUN groupadd -r appuser && useradd -r -m -d /home/appuser -g appuser -u 1000 appuser \
+    && chown -R appuser:appuser /app
+ENV HOME=/home/appuser
+USER appuser
+
 EXPOSE 8501
 
 CMD ["uv", "run", "--no-sync", "streamlit", "run", "ui/app.py", "--server.address=0.0.0.0", "--server.port=8501"]

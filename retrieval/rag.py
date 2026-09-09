@@ -233,7 +233,7 @@ def answer_question(
     minsearch_index,
     qdrant_client,
     embedder: OnnxEmbedder,
-    num_results: int = 10,
+    num_results: int = 15,
 ) -> str:
     """
     Convenience wrapper for CLI/standalone use (retrieves then answers in
@@ -249,6 +249,15 @@ def answer_question(
     this wrapper is what evaluation/answer_quality.py calls to generate
     answers for scoring, it needs to go through the same retrieve+rerank
     steps as production, or the eval isn't measuring what's actually live.
+
+    Default bumped from 10 to 15 (30-candidate pool instead of 20) per
+    roadmap item 5: Hit Rate@10 (0.652) vs Hit Rate@30 (0.747) on the
+    1,000-question curated_v2 benchmark showed real chunks were being
+    left out of the pre-rerank candidate pool before reranking ever got a
+    chance to work with them. Re-run evaluation/metrics.py at k=15 against
+    ground_truth_curated_v2.jsonl to confirm the actual effect before
+    trusting this in production -- this change alone is a hypothesis
+    acted on, not yet a measured result.
     """
     candidates = hybrid_search(
         question, records, minsearch_index, qdrant_client, embedder, num_results=num_results * 2

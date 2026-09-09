@@ -31,3 +31,33 @@ jobs:
           # everything else still runs.
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: uv run pytest -v
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      # Scans the actual resolved/installed environment against the
+      # PyPI Advisory Database (same source as Dependabot's own alerts) --
+      # separate job from `pytest` above so a vulnerability finding shows
+      # up as its own clearly-labeled failure, not mixed into test output.
+      # This is an ACTIVE check (fails the build on a real finding), not
+      # just Dependabot's passive "here's a PR whenever it gets to it" --
+      # that's the actual gap SECURITY.md flagged: version-update bots and
+      # vulnerability scanning aren't the same thing. Drop --strict (or add
+      # --ignore-vuln for a specific ID with a comment explaining why) if
+      # this becomes noisy with findings that don't apply to how this app
+      # actually uses the affected package.
+      - name: Audit dependencies for known vulnerabilities
+        run: uvx pip-audit --strict --path .venv

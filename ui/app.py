@@ -263,8 +263,8 @@ def render_feedback_buttons(message):
 def run_rag_fallback(question, stream: bool = False):
     """
     Search the full FY08-26 PDF corpus (jsonl chunks) directly. Retrieves a
-    wider top-20 RRF-fused candidate set via ONE hybrid_search call, then
-    reranks down to the top-10 most relevant via a cross-encoder before
+    wider top-30 RRF-fused candidate set via ONE hybrid_search call, then
+    reranks down to the top-15 most relevant via a cross-encoder before
     generation -- RRF fusion rank and true query-relevance aren't the same
     thing, so this narrows on relevance specifically, right before the
     chunks are used for both the Sources display and generation (see
@@ -299,8 +299,8 @@ def run_rag_fallback(question, stream: bool = False):
     st.session_state.messages), but the live view can briefly show the
     wrong text before that happens.
     """
-    candidates = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=20)
-    sources = rerank_chunks(question, candidates, top_n=10)
+    candidates = hybrid_search(question, records, minsearch_index, qdrant_client, embedder, num_results=30)
+    sources = rerank_chunks(question, candidates, top_n=15)
 
     if stream:
         with st.chat_message("assistant"):

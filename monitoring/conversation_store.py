@@ -129,6 +129,16 @@ def save_message(message: dict, session_id: str) -> int:
         "trace_id": message.get("trace_id"),
         "question": message.get("question"),
         "created_at": time.time(),
+        # 30 days -- long enough to review Reddit-testing feedback threads,
+        # short enough that conversation history doesn't accumulate
+        # indefinitely (SECURITY.md's noted gap). Adjust if 30 days turns
+        # out to be too short/long once real usage patterns are visible.
+        # The field alone does nothing without the TTL policy enabled on
+        # it -- see scripts/setup_alerts.sh's sibling comment or run:
+        #   gcloud firestore fields ttls update expires_at \
+        #     --collection-group=conversation_messages --enable-ttl \
+        #     --project=safaricom-intelligence
+        "expires_at": time.time() + (30 * 24 * 3600),
     })
     return seq
 
