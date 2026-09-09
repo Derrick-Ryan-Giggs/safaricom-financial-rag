@@ -45,19 +45,23 @@ jobs:
       - name: Set up Python
         run: uv python install
 
-      - name: Install dependencies
-        run: uv sync --dev
+      # Exports the locked dependency set to a plain requirements list,
+      # then audits THAT directly -- avoids pip-audit needing to
+      # introspect a live Python environment at all. That's what broke
+      # locally: pip-audit run via `uvx` audits uvx's own isolated tool
+      # environment by default, not this project's venv, unless
+      # PIPAPI_PYTHON_LOCATION is set to redirect it. A static
+      # requirements export sidesteps that whole class of problem.
+      - name: Export locked dependencies for audit
+        run: uv export --frozen --no-dev --no-hashes -o requirements-audit.txt
 
-      # Scans the actual resolved/installed environment against the
-      # PyPI Advisory Database (same source as Dependabot's own alerts) --
-      # separate job from `pytest` above so a vulnerability finding shows
-      # up as its own clearly-labeled failure, not mixed into test output.
-      # This is an ACTIVE check (fails the build on a real finding), not
-      # just Dependabot's passive "here's a PR whenever it gets to it" --
-      # that's the actual gap SECURITY.md flagged: version-update bots and
-      # vulnerability scanning aren't the same thing. Drop --strict (or add
-      # --ignore-vuln for a specific ID with a comment explaining why) if
-      # this becomes noisy with findings that don't apply to how this app
-      # actually uses the affected package.
+      # Same idea as before: checks against the PyPI Advisory Database
+      # (same source as Dependabot's own alerts), separate job so a
+      # finding shows up as its own clearly-labeled failure. Active check
+      # (fails the build on a real finding), not Dependabot's passive
+      # "here's a PR eventually." Drop --strict (or add --ignore-vuln for
+      # a specific ID with a comment explaining why) if this gets noisy
+      # with findings that don't apply to how this app actually uses the
+      # affected package.
       - name: Audit dependencies for known vulnerabilities
-        run: uvx pip-audit --strict --path .venv
+        run: uvx pip-audit --strict -r requirements-audit.txt
