@@ -44,7 +44,7 @@ colorama==0.4.6 ; sys_platform == 'win32'
     #   click
     #   loguru
     #   tqdm
-cryptography==49.0.0
+cryptography==50.0.1
     # via
     #   google-auth
     #   pdfminer-six
@@ -65,7 +65,7 @@ fsspec==2026.6.0
     # via huggingface-hub
 gitdb==4.0.12
     # via gitpython
-gitpython==3.1.55
+gitpython==3.1.62
     # via streamlit
 google-api-core==2.33.0
     # via
@@ -125,7 +125,7 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-h2==4.3.0
+h2==4.4.1
     # via httpx
 hf-xet==1.5.2 ; platform_machine == 'AMD64' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
     # via huggingface-hub
