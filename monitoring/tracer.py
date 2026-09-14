@@ -1,76 +1,69 @@
 """
 monitoring/tracer.py
 
-Sets up OpenTelemetry tracing for the RAG pipeline, exporting spans to a
-local SQLite database (no OTel collector needed for this project's scale).
+Sets up OpenTelemetry tracing for the RAG pipeline, exporting spans to
+Firestore instead of local SQLite -- rag-app and monitoring/dashboard.py
+(a separate Cloud Run service) have no shared disk, so a local traces.db
+was invisible to the dashboard no matter how much traffic rag-app saw.
+Same reasoning as monitoring/conversation_store.py's earlier migration.
 
-Call get_tracer() to get a ready-to-use tracer -- it handles one-time setup
-internally. trace.set_tracer_provider() can only be called once per Python
-process, so setup_tracing() is a no-op on repeated calls.
+Call get_tracer() to get a ready-to-use tracer -- it handles one-time
+setup internally. trace.set_tracer_provider() can only be called once per
+Python process, so setup_tracing() is a no-op on repeated calls.
 """
-
-import json
-import sqlite3
-from pathlib import Path
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExporter, SpanExportResult
+from google.cloud import firestore
 
-import os
+import config
 
-# Overridable so a Docker named volume can persist this file at a path
-# outside the source tree (e.g. /data/traces.db) without shadowing
-# tracer.py/feedback.py themselves -- mounting a volume directly at
-# monitoring/ would wipe out this module's own source code from the
-# container's view. Defaults to the original relative path for local,
-# non-Docker development.
-DB_PATH = os.environ.get("TRACES_DB_PATH", "monitoring/traces.db")
+SPANS_COLLECTION = "spans"
 
 _initialized = False
+_db: firestore.Client | None = None
 
 
-class SQLiteSpanExporter(SpanExporter):
-    """Writes finished spans to a local SQLite table for the feedback dashboard."""
+def _get_client() -> firestore.Client:
+    global _db
+    if _db is None:
+        _db = firestore.Client(project=config.GCP_PROJECT_ID)
+    return _db
 
-    def __init__(self, db_path: str = DB_PATH):
-        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-        self.conn = sqlite3.connect(db_path, check_same_thread=False)
-        self.conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS spans (
-                trace_id TEXT,
-                span_id TEXT,
-                name TEXT,
-                start_time REAL,
-                end_time REAL,
-                duration_ms REAL,
-                attributes TEXT
-            )
-            """
-        )
-        self.conn.commit()
+
+def _firestore_safe(attrs: dict) -> dict:
+    """Firestore maps support scalars and lists but not tuples -- OTel
+    attributes can be tuples, so convert those before writing."""
+    return {k: (list(v) if isinstance(v, tuple) else v) for k, v in attrs.items()}
+
+
+class FirestoreSpanExporter(SpanExporter):
+    """Writes finished spans to Firestore so the dashboard -- a separate
+    Cloud Run service -- can actually read them. See module docstring."""
 
     def export(self, spans) -> SpanExportResult:
+        db = _get_client()
+        batch = db.batch()
         for span in spans:
-            self.conn.execute(
-                "INSERT INTO spans VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (
-                    format(span.context.trace_id, "032x"),
-                    format(span.context.span_id, "016x"),
-                    span.name,
-                    span.start_time / 1e9,
-                    span.end_time / 1e9,
-                    (span.end_time - span.start_time) / 1e6,
-                    json.dumps(dict(span.attributes or {})),
-                ),
-            )
-        self.conn.commit()
+            trace_id = format(span.context.trace_id, "032x")
+            span_id = format(span.context.span_id, "016x")
+            doc_ref = db.collection(SPANS_COLLECTION).document(f"{trace_id}_{span_id}")
+            batch.set(doc_ref, {
+                "trace_id": trace_id,
+                "span_id": span_id,
+                "name": span.name,
+                "start_time": span.start_time / 1e9,
+                "end_time": span.end_time / 1e9,
+                "duration_ms": (span.end_time - span.start_time) / 1e6,
+                "attributes": _firestore_safe(dict(span.attributes or {})),
+            })
+        batch.commit()
         return SpanExportResult.SUCCESS
 
     def shutdown(self) -> None:
-        self.conn.close()
+        pass
 
 
 def setup_tracing(service_name: str = "safaricom-rag") -> None:
@@ -79,7 +72,7 @@ def setup_tracing(service_name: str = "safaricom-rag") -> None:
         return
 
     provider = TracerProvider(resource=Resource.create({"service.name": service_name}))
-    provider.add_span_processor(SimpleSpanProcessor(SQLiteSpanExporter()))
+    provider.add_span_processor(SimpleSpanProcessor(FirestoreSpanExporter()))
     trace.set_tracer_provider(provider)
     _initialized = True
 

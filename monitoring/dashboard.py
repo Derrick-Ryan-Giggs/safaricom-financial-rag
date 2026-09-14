@@ -2,9 +2,11 @@
 monitoring/dashboard.py
 
 Feedback + observability dashboard (LLM Zoomcamp Module 5 requirement).
-Reads directly from the SQLite database written by monitoring/tracer.py
-(`spans` table) and monitoring/feedback.py (`feedback` table) -- same DB
-the live app already writes to, no separate data pipeline needed.
+Reads from the same Firestore collections monitoring/tracer.py ("spans")
+and monitoring/feedback.py ("feedback") write to. Migrated off local
+SQLite -- this dashboard runs as its own Cloud Run service, with its own
+disk, separate from rag-app's, so the old traces.db file it read was
+never the file rag-app was writing to.
 
 Usage:
     uv run streamlit run monitoring/dashboard.py
@@ -13,36 +15,25 @@ Usage:
 import sys
 from pathlib import Path
 
-# Same fix as ui/app.py: Streamlit's script runner adds this file's own
-# directory (monitoring/) to sys.path, not the project root -- so
-# `from monitoring.tracer import ...` below would fail without this,
-# since the `monitoring` package itself needs the project root on the
-# path to resolve.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-import json
-import sqlite3
 
 import pandas as pd
 import streamlit as st
+from google.cloud import firestore
 
-from monitoring.tracer import DB_PATH
+import config
 
 st.set_page_config(page_title="Safaricom RAG -- Monitoring", layout="wide")
 st.title("Monitoring Dashboard")
-st.caption("Feedback and pipeline observability, read from monitoring/traces.db")
+st.caption("Feedback and pipeline observability, read from Firestore")
+
+_db = firestore.Client(project=config.GCP_PROJECT_ID)
 
 
 @st.cache_data(ttl=30)
 def load_feedback() -> pd.DataFrame:
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        df = pd.read_sql_query("SELECT * FROM feedback", conn)
-        conn.close()
-    except (sqlite3.OperationalError, pd.errors.DatabaseError):
-        # Table doesn't exist yet -- nobody has given feedback in the main
-        # app, so monitoring/feedback.py's CREATE TABLE has never run.
-        return pd.DataFrame(columns=["trace_id", "question", "answer", "rating", "created_at"])
+    rows = [doc.to_dict() for doc in _db.collection("feedback").stream()]
+    df = pd.DataFrame(rows, columns=["trace_id", "question", "answer", "rating", "created_at"])
     if not df.empty:
         df["created_at"] = pd.to_datetime(df["created_at"], unit="s")
     return df
@@ -50,32 +41,17 @@ def load_feedback() -> pd.DataFrame:
 
 @st.cache_data(ttl=30)
 def load_spans() -> pd.DataFrame:
-    try:
-        conn = sqlite3.connect(DB_PATH)
-        df = pd.read_sql_query("SELECT * FROM spans", conn)
-        conn.close()
-    except (sqlite3.OperationalError, pd.errors.DatabaseError):
-        return pd.DataFrame(columns=["trace_id", "span_id", "name", "start_time", "end_time", "duration_ms", "attributes"])
+    rows = [doc.to_dict() for doc in _db.collection("spans").stream()]
+    df = pd.DataFrame(rows, columns=["trace_id", "span_id", "name", "start_time", "end_time", "duration_ms", "attributes"])
     if not df.empty:
         df["start_time"] = pd.to_datetime(df["start_time"], unit="s")
-
-        def extract_route(attrs_json):
-            try:
-                return json.loads(attrs_json).get("route", "unknown")
-            except (TypeError, ValueError):
-                return "unknown"
-
-        df["route"] = df["attributes"].apply(extract_route)
+        df["route"] = df["attributes"].apply(lambda a: (a or {}).get("route", "unknown"))
     return df
 
 
 feedback_df = load_feedback()
 spans_df = load_spans()
 
-# ui/app.py wraps each full question in one "answer_question" span (see
-# tracer.start_as_current_span("answer_question") in process_question) --
-# retrieval/rag.py and retrieval/sql_query.py don't emit their own child
-# spans, so this is the whole trace per question, not just a sub-step.
 question_spans = spans_df[spans_df["name"] == "answer_question"] if not spans_df.empty else spans_df
 
 if feedback_df.empty and question_spans.empty:
