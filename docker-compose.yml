@@ -15,10 +15,7 @@ x-airflow-common: &airflow-common
     postgres:
       condition: service_healthy
 
-x-app-common: &app-common
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
+x-app-runtime: &app-runtime
   environment:
     GCP_PROJECT_ID: safaricom-intelligence
     GOOGLE_APPLICATION_CREDENTIALS: /secrets/gcp-service-account.json
@@ -31,9 +28,6 @@ x-app-common: &app-common
     - ./models:/app/models
     - monitoring-data:/data
     - fastembed-cache:/app/.fastembed_cache
-  depends_on:
-    qdrant:
-      condition: service_healthy
   restart: unless-stopped
 
 services:
@@ -95,13 +89,24 @@ services:
       retries: 5
 
   app:
-    <<: *app-common
+    <<: *app-runtime
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: safaricom-financial-rag-app:local
+    depends_on:
+      qdrant:
+        condition: service_healthy
     ports:
       - "8601:8501"
 
   dashboard:
-    <<: *app-common
+    <<: *app-runtime
+    image: safaricom-financial-rag-app:local
     command: ["uv", "run", "streamlit", "run", "monitoring/dashboard.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    depends_on:
+      app:
+        condition: service_started
     ports:
       - "8602:8501"
 
