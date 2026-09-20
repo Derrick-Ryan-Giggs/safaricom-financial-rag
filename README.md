@@ -19,6 +19,7 @@ Zoomcamp 2026.
 - [Evaluation](#evaluation)
 - [Known Limitations](#known-limitations)
 - [Live Demo](#live-demo)
+- [Dashboard](#dashboard)
 - [Screenshots](#screenshots)
 - [Credentials Required to Run](#credentials-required-to-run)
 - [Reproducibility: How to Run](#reproducibility-how-to-run)
@@ -527,6 +528,17 @@ finalized.
 ## Live Demo
 
 Deployed on Google Cloud Run: [rag-app-1003744998459.africa-south1.run.app](https://rag-app-1003744998459.africa-south1.run.app/)
+
+
+## Dashboard
+
+Feedback and observability dashboard: total questions, thumbs up/down
+feedback ratio, route distribution (SQL vs RAG vs web fallback), and
+response latency, read live from Firestore.
+
+Deployed on Google Cloud Run: rag-dashboard-1003744998459.africa-south1.run.app
+
+
 
 ## Screenshots
 
