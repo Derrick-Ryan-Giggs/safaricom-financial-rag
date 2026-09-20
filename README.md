@@ -536,7 +536,7 @@ Feedback and observability dashboard: total questions, thumbs up/down
 feedback ratio, route distribution (SQL vs RAG vs web fallback), and
 response latency, read live from Firestore.
 
-Deployed on Google Cloud Run: rag-dashboard-1003744998459.africa-south1.run.app
+Deployed on Google Cloud Run: [rag-dashboard-1003744998459.africa-south1.run.app](https://rag-dashboard-1003744998459.africa-south1.run.app) 
 
 
 
