@@ -22,6 +22,7 @@ GROQ_API_KEY = get_secret("GROQ_API_KEY")
 GCS_BUCKET_NAME = get_secret("GCS_BUCKET_NAME")
 BIGQUERY_DATASET = get_secret("BIGQUERY_DATASET")
 BIGQUERY_MART_DATASET = get_secret("BIGQUERY_MART_DATASET")
+TAVILY_API_KEY = get_secret("TAVILY_API_KEY")
 
 # constants
 EMBEDDING_MODEL_PATH = "models/Xenova/all-MiniLM-L6-v2"

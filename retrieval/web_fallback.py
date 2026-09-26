@@ -9,14 +9,21 @@ this project's value is being grounded in Safaricom's own filings, and
 blending in unverified web content whenever an answer is merely "thin"
 would quietly erode that.
 
-Uses DuckDuckGo via the `ddgs` package -- no API key, no cost, matching
-this project's cost-conscious setup. Caveat: ddgs is an unofficial wrapper
-around DuckDuckGo's results, not a real API, so it can be rate-limited or
-change behavior without notice. Acceptable for an occasional last-resort
-fallback; not something to depend on as a primary path. If that becomes a
-problem, Tavily (free tier, built for LLM/RAG use, needs a free signup) is
-the natural upgrade -- swap search_web()'s implementation, everything else
-here stays the same.
+Migrated from DuckDuckGo (the `ddgs` package) to Tavily. ddgs is an
+unofficial wrapper around DuckDuckGo's results, not a real API, and was
+prone to breaking silently whenever DuckDuckGo changed their markup or
+rate-limited scrapers. Tavily is a real API built for LLM/agent search,
+with results re-ranked for query relevance rather than raw search-engine
+ordering. Requires TAVILY_API_KEY in GCP Secret Manager, fetched at import
+time the same way GROQ_API_KEY already is (see config.py). Free tier:
+1,000 credits/month, no credit card required -- comfortably covers this
+project's fallback-only, occasional-use traffic.
+
+Only search_web() actually changes here -- build_prompt(), web_search_answer(),
+and main() all stay exactly as they were, since search_web() already
+returned a list of plain dicts and Tavily's results are mapped into that
+same {title, href, body} shape rather than threading a new shape through
+every downstream caller.
 
 Usage:
     uv run python -m retrieval.web_fallback --question "Who is Safaricom's current CEO?"
@@ -24,8 +31,8 @@ Usage:
 
 import argparse
 
-from ddgs import DDGS
 from openai import OpenAI
+from tavily import TavilyClient
 
 import config
 
@@ -48,11 +55,30 @@ reports or regulatory filings.
 
 MAX_RESULTS = 5
 
+_tavily_client: TavilyClient | None = None
+
+
+def _get_tavily_client() -> TavilyClient:
+    global _tavily_client
+    if _tavily_client is None:
+        _tavily_client = TavilyClient(api_key=config.TAVILY_API_KEY)
+    return _tavily_client
+
 
 def search_web(query: str, max_results: int = MAX_RESULTS) -> list[dict]:
     try:
-        with DDGS() as ddgs:
-            return list(ddgs.text(query, max_results=max_results))
+        client = _get_tavily_client()
+        response = client.search(query=query, search_depth="basic", max_results=max_results)
+        # Mapped into the same {title, href, body} shape ddgs used to
+        # return, so build_prompt() below needed zero changes.
+        return [
+            {
+                "title": r.get("title", "untitled"),
+                "href": r.get("url", ""),
+                "body": r.get("content", ""),
+            }
+            for r in response.get("results", [])
+        ]
     except Exception as e:
         print(f"Warning: web search failed ({e}).")
         return []
